@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiniela del Grupo 2026</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Sin logos, marcas ni assets de FIFA. Banderas = emoji Unicode. -->
+</head>
+<body>
+  <!-- ===== LOGIN ===== -->
+  <section id="login-screen" class="screen">
+    <div class="auth-card">
+      <h1 id="login-title">Quiniela del Grupo 2026</h1>
+      <p class="muted">Acceso solo para participantes del grupo.</p>
+
+      <div class="instrucciones">
+        <strong>Cómo entrar</strong>
+        <ol>
+          <li>Elige tu nombre.</li>
+          <li>Escribe tu PIN. Si es tu primer ingreso, usa el <b>PIN inicial</b> que te dio el administrador.</li>
+          <li>En el primer ingreso tendrás que crear tu <b>PIN personal</b>.</li>
+        </ol>
+      </div>
+
+      <label class="field">Nombre
+        <select id="login-nombre"><option value="">— elige tu nombre —</option></select>
+      </label>
+      <label class="field">PIN
+        <input type="password" id="login-pin" inputmode="numeric" autocomplete="current-password" placeholder="Tu PIN" />
+      </label>
+      <button id="login-btn">Entrar</button>
+      <p class="error" id="login-error"></p>
+    </div>
+  </section>
+
+  <!-- ===== CAMBIAR PIN ===== -->
+  <section id="change-screen" class="screen hidden">
+    <div class="auth-card">
+      <h1 id="change-title">Crea tu PIN</h1>
+      <p class="muted" id="change-sub">Por seguridad, define tu PIN personal antes de continuar.</p>
+
+      <label class="field">Nuevo PIN
+        <input type="password" id="new-pin" inputmode="numeric" autocomplete="new-password" placeholder="Nuevo PIN" />
+      </label>
+      <label class="field">Repite el nuevo PIN
+        <input type="password" id="new-pin2" inputmode="numeric" autocomplete="new-password" placeholder="Confírmalo" />
+      </label>
+      <button id="change-btn">Guardar PIN</button>
+      <button id="change-cancel" class="ghost hidden">Cancelar</button>
+      <p class="error" id="change-error"></p>
+    </div>
+  </section>
+
+  <!-- ===== APP ===== -->
+  <div id="app-screen" class="hidden">
+    <header class="topbar">
+      <h1 id="site-name">Quiniela del Grupo 2026</h1>
+      <div class="whoami">
+        <span id="hola"></span>
+        <button id="btn-cambiar" class="link">Cambiar PIN</button>
+        <button id="btn-salir" class="link">Salir</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-view="inicio">Inicio</button>
+      <button class="tab" data-view="resultados">Resultados y tabla</button>
+      <button class="tab" data-view="admin">Admin</button>
+    </nav>
+
+    <main>
+      <!-- ===== INICIO ===== -->
+      <section id="view-inicio" class="view active">
+        <div id="proximo" class="card match-card">Cargando…</div>
+
+        <div class="card">
+          <h2>Leaderboard</h2>
+          <table class="lb" id="leaderboard"></table>
+        </div>
+
+        <div class="card">
+          <h2>Pronósticos de este partido</h2>
+          <table class="grid" id="grid-proximo"></table>
+        </div>
+      </section>
+
+      <!-- ===== RESULTADOS ===== -->
+      <section id="view-resultados" class="view">
+        <div class="card">
+          <h2>Tabla general</h2>
+          <table class="lb" id="tabla-full"></table>
+        </div>
+        <div id="resultados-list"></div>
+      </section>
+
+      <!-- ===== ADMIN ===== -->
+      <section id="view-admin" class="view">
+        <div class="card">
+          <h2>Admin</h2>
+          <p class="muted">Acciones protegidas por PIN de administrador.</p>
+          <label>PIN admin: <input type="password" id="admin-pin" autocomplete="off" /></label>
+
+          <h3>Cargar resultado real</h3>
+          <div class="row">
+            <select id="ar-partido"></select>
+            <input type="number" min="0" max="20" id="ar-local" class="score" />
+            <span>–</span>
+            <input type="number" min="0" max="20" id="ar-visitante" class="score" />
+            <button id="ar-save">Guardar</button>
+          </div>
+
+          <h3>Meter pronóstico de alguien (lo mandó por chat)</h3>
+          <div class="row">
+            <select id="ap-partido"></select>
+            <select id="ap-participante"></select>
+            <input type="number" min="0" max="20" id="ap-local" class="score" />
+            <span>–</span>
+            <input type="number" min="0" max="20" id="ap-visitante" class="score" />
+            <button id="ap-save">Guardar</button>
+          </div>
+
+          <h3>Sincronizar</h3>
+          <button id="sync-btn">Re-sincronizar calendario y resultados</button>
+          <p class="muted" id="admin-msg"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p class="muted">Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
