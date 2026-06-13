@@ -35,6 +35,7 @@ const I18N = {
     st_final: "Finalizado", st_open: "Abierto", st_closed: "Cerrado",
     vs: "vs", center_mx: "(hora de México)", closes_in: "Cierra en {t}", closed_clock: "⏱ Cerrado",
     closes_note: "El pronóstico cierra 1 minuto antes del inicio.",
+    pm_label: "Polymarket", pm_draw: "Empate", pm_hint: "Probabilidad implícita del mercado",
     final_result: "Resultado final:", your_pred: "Tu pronóstico:",
     closed_no_pred: "Ya cerró. No registraste pronóstico.",
     send: "Enviar", update: "Actualizar", complete_score: "Completa el marcador",
@@ -85,6 +86,7 @@ const I18N = {
     st_final: "Finished", st_open: "Open", st_closed: "Closed",
     vs: "vs", center_mx: "(Mexico time)", closes_in: "Closes in {t}", closed_clock: "⏱ Closed",
     closes_note: "Predictions close 1 minute before kickoff.",
+    pm_label: "Polymarket", pm_draw: "Draw", pm_hint: "Market-implied probability",
     final_result: "Final result:", your_pred: "Your prediction:",
     closed_no_pred: "Closed. You didn't submit a prediction.",
     send: "Submit", update: "Update", complete_score: "Fill in the score",
@@ -135,6 +137,7 @@ const I18N = {
     st_final: "Завершён", st_open: "Открыт", st_closed: "Закрыт",
     vs: "vs", center_mx: "(время Мексики)", closes_in: "Закроется через {t}", closed_clock: "⏱ Закрыто",
     closes_note: "Приём прогнозов закрывается за 1 минуту до начала.",
+    pm_label: "Polymarket", pm_draw: "Ничья", pm_hint: "Подразумеваемая рынком вероятность",
     final_result: "Итоговый счёт:", your_pred: "Ваш прогноз:",
     closed_no_pred: "Закрыто. Вы не сделали прогноз.",
     send: "Отправить", update: "Обновить", complete_score: "Укажите счёт",
@@ -185,6 +188,7 @@ const I18N = {
     st_final: "Beendet", st_open: "Offen", st_closed: "Geschlossen",
     vs: "vs", center_mx: "(Mexiko-Zeit)", closes_in: "Schließt in {t}", closed_clock: "⏱ Geschlossen",
     closes_note: "Tipps schließen 1 Minute vor Anpfiff.",
+    pm_label: "Polymarket", pm_draw: "Unentschieden", pm_hint: "Vom Markt implizierte Wahrscheinlichkeit",
     final_result: "Endergebnis:", your_pred: "Dein Tipp:",
     closed_no_pred: "Geschlossen. Du hast keinen Tipp abgegeben.",
     send: "Abschicken", update: "Aktualisieren", complete_score: "Ergebnis eingeben",
@@ -468,6 +472,38 @@ function fmtKickoffMX(iso) {
   } catch (e) { return null; }
 }
 
+// Barra 1/X/2 con las probabilidades implícitas de Polymarket (si hay datos).
+// Las 3 probabilidades se normalizan a 100% para el ancho de la barra.
+function pmBar(p) {
+  const l = p.pm_local, d = p.pm_empate, v = p.pm_visitante;
+  if (l == null || d == null || v == null) return "";
+  const sum = l + d + v;
+  if (!(sum > 0)) return "";
+  let pl = Math.round((l / sum) * 100);
+  let pd = Math.round((d / sum) * 100);
+  let pv = Math.round((v / sum) * 100);
+  const diff = 100 - (pl + pd + pv); // corrige el redondeo en el segmento mayor
+  if (diff) {
+    if (pl >= pd && pl >= pv) pl += diff;
+    else if (pv >= pd) pv += diff;
+    else pd += diff;
+  }
+  return `
+    <div class="pm" title="${esc(t("pm_hint"))}">
+      <div class="pm-h">📊 ${t("pm_label")}</div>
+      <div class="pm-bar">
+        <span class="pm-seg pm-l" style="width:${pl}%">${pl}%</span>
+        <span class="pm-seg pm-d" style="width:${pd}%">${pd}%</span>
+        <span class="pm-seg pm-v" style="width:${pv}%">${pv}%</span>
+      </div>
+      <div class="pm-legend">
+        <span><i class="pm-sw pm-l"></i>${flag(p.local)} ${esc(p.local)} ${pl}%</span>
+        <span><i class="pm-sw pm-d"></i>${t("pm_draw")} ${pd}%</span>
+        <span><i class="pm-sw pm-v"></i>${flag(p.visitante)} ${esc(p.visitante)} ${pv}%</span>
+      </div>
+    </div>`;
+}
+
 function renderProximo() {
   const box = $("#proximo");
   const p = STATE.proximo;
@@ -498,6 +534,7 @@ function renderProximo() {
     <div class="meta">${[fechaTxt, horaTxt, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
     <div class="countdown" id="cd"></div>
     ${notaCierre}
+    ${finalizado ? "" : pmBar(p)}
     <div id="predict-area"></div>`;
 
   const area = $("#predict-area");
@@ -627,6 +664,7 @@ function renderProximos() {
         ${badge}
       </div>
       <div class="muted up-when">${[hora, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
+      ${pmBar(p)}
       ${form}`;
     cont.appendChild(card);
   });

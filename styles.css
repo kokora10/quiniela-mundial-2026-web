@@ -339,3 +339,23 @@ body.dark .scoring-list b.pts { background: #2a1c24; color: #ff97b0; }
 body.dark .langb { border-color: var(--line); color: var(--muted); }
 body.dark .countdown { background: #2a1c24; }
 body.dark .toast { background: #2a2e3a; }
+
+/* ---- Polymarket: barra 1/X/2 de probabilidades implícitas ---- */
+.pm { margin: 12px 0 4px; padding: 10px 12px; border: 1px solid var(--line);
+  border-radius: var(--radius-sm); background: var(--soft); }
+.pm-h { font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+  color: var(--muted); margin-bottom: 7px; text-transform: uppercase; }
+.pm-bar { display: flex; height: 22px; border-radius: 7px; overflow: hidden;
+  box-shadow: var(--shadow-sm); }
+.pm-seg { display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: #fff; white-space: nowrap;
+  overflow: hidden; min-width: 0; transition: width .4s ease; }
+.pm-l { background: var(--ok); }
+.pm-d { background: #8a90a0; }
+.pm-v { background: #2f6fd6; }
+.pm-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 7px;
+  font-size: .76rem; color: var(--ink); }
+.pm-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.pm-sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+body.dark .pm { background: #221a20; border-color: #3a2c34; }
+body.dark .pm-legend { color: #ecd9e2; }
