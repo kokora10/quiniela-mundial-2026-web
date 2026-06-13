@@ -30,7 +30,8 @@ const I18N = {
     footer: "Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.",
     loading: "Cargando…", next_match: "Próximo partido",
     st_final: "Finalizado", st_open: "Abierto", st_closed: "Cerrado",
-    vs: "vs", center_mx: "(Centro MX)", closes_in: "Cierra en {t}", closed_clock: "⏱ Cerrado",
+    vs: "vs", center_mx: "(hora de México)", closes_in: "Cierra en {t}", closed_clock: "⏱ Cerrado",
+    closes_note: "El pronóstico cierra 1 minuto antes del inicio.",
     final_result: "Resultado final:", your_pred: "Tu pronóstico:",
     closed_no_pred: "Ya cerró. No registraste pronóstico.",
     send: "Enviar", update: "Actualizar", complete_score: "Completa el marcador",
@@ -76,7 +77,8 @@ const I18N = {
     footer: "Internal use, non-profit. Score data from a public source.",
     loading: "Loading…", next_match: "Next match",
     st_final: "Finished", st_open: "Open", st_closed: "Closed",
-    vs: "vs", center_mx: "(Central MX)", closes_in: "Closes in {t}", closed_clock: "⏱ Closed",
+    vs: "vs", center_mx: "(Mexico time)", closes_in: "Closes in {t}", closed_clock: "⏱ Closed",
+    closes_note: "Predictions close 1 minute before kickoff.",
     final_result: "Final result:", your_pred: "Your prediction:",
     closed_no_pred: "Closed. You didn't submit a prediction.",
     send: "Submit", update: "Update", complete_score: "Fill in the score",
@@ -122,7 +124,8 @@ const I18N = {
     footer: "Для внутреннего использования, без коммерции. Данные о счёте из открытого источника.",
     loading: "Загрузка…", next_match: "Следующий матч",
     st_final: "Завершён", st_open: "Открыт", st_closed: "Закрыт",
-    vs: "vs", center_mx: "(Центр. Мексика)", closes_in: "Закроется через {t}", closed_clock: "⏱ Закрыто",
+    vs: "vs", center_mx: "(время Мексики)", closes_in: "Закроется через {t}", closed_clock: "⏱ Закрыто",
+    closes_note: "Приём прогнозов закрывается за 1 минуту до начала.",
     final_result: "Итоговый счёт:", your_pred: "Ваш прогноз:",
     closed_no_pred: "Закрыто. Вы не сделали прогноз.",
     send: "Отправить", update: "Обновить", complete_score: "Укажите счёт",
@@ -168,7 +171,8 @@ const I18N = {
     footer: "Interne Nutzung, ohne Gewinnabsicht. Ergebnisdaten aus öffentlicher Quelle.",
     loading: "Laden…", next_match: "Nächstes Spiel",
     st_final: "Beendet", st_open: "Offen", st_closed: "Geschlossen",
-    vs: "vs", center_mx: "(Zentral-MX)", closes_in: "Schließt in {t}", closed_clock: "⏱ Geschlossen",
+    vs: "vs", center_mx: "(Mexiko-Zeit)", closes_in: "Schließt in {t}", closed_clock: "⏱ Geschlossen",
+    closes_note: "Tipps schließen 1 Minute vor Anpfiff.",
     final_result: "Endergebnis:", your_pred: "Dein Tipp:",
     closed_no_pred: "Geschlossen. Du hast keinen Tipp abgegeben.",
     send: "Abschicken", update: "Aktualisieren", complete_score: "Ergebnis eingeben",
@@ -433,6 +437,22 @@ function predByPartido(pid) {
   return m;
 }
 
+// Fecha y hora de inicio en zona horaria de México, derivadas del kickoff real
+// (la misma base que el cierre/countdown), para que siempre sean consistentes.
+const LOCALE = { es: "es-MX", en: "en-US", ru: "ru-RU", de: "de-DE" };
+function fmtKickoffMX(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  const loc = LOCALE[lang] || "es-MX";
+  const opts = { timeZone: "America/Mexico_City" };
+  try {
+    const date = new Intl.DateTimeFormat(loc, { ...opts, weekday: "short", day: "numeric", month: "short" }).format(d);
+    const time = new Intl.DateTimeFormat(loc, { ...opts, hour: "2-digit", minute: "2-digit", hour12: false }).format(d);
+    return { date, time };
+  } catch (e) { return null; }
+}
+
 function renderProximo() {
   const box = $("#proximo");
   const p = STATE.proximo;
@@ -447,6 +467,12 @@ function renderProximo() {
               : `<span class="badge closed">${t("st_closed")}</span>`;
   const real = finalizado ? `${p.res_local} – ${p.res_visitante}` : "";
 
+  const mx = fmtKickoffMX(p.kickoff_utc);
+  const fechaTxt = mx ? mx.date : (p.fecha || "");
+  const horaTxt = mx ? `${mx.time} ${t("center_mx")}`
+                     : (p.hora_centro_mx ? `${p.hora_centro_mx} ${t("center_mx")}` : "");
+  const notaCierre = finalizado ? "" : `<div class="muted closes-note">${t("closes_note")}</div>`;
+
   box.innerHTML = `
     <div class="match-head"><strong>${t("next_match")}</strong>${badge}</div>
     <div class="teams">
@@ -454,9 +480,9 @@ function renderProximo() {
       <div class="vs">${finalizado ? real : t("vs")}</div>
       <div class="team"><div class="flag">${flag(p.visitante)}</div><div class="name">${esc(p.visitante)}</div></div>
     </div>
-    <div class="meta">${[p.fecha, p.hora_centro_mx ? p.hora_centro_mx + " " + t("center_mx") : "", p.sede]
-      .filter(Boolean).map(esc).join(" · ")}</div>
+    <div class="meta">${[fechaTxt, horaTxt, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
     <div class="countdown" id="cd"></div>
+    ${notaCierre}
     <div id="predict-area"></div>`;
 
   const area = $("#predict-area");
@@ -576,9 +602,11 @@ function renderResultados() {
       rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td>
         <td>${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)} ${tag}</td><td class="pts">${pts}</td></tr>`;
     });
+    const mx = fmtKickoffMX(p.kickoff_utc);
+    const dt = mx ? `${mx.date} · ${mx.time} ${t("center_mx")}` : (p.fecha || "");
     card.innerHTML = `
       <h2>${flag(p.local)} ${esc(p.local)} ${p.res_local} – ${p.res_visitante} ${esc(p.visitante)} ${flag(p.visitante)}</h2>
-      <div class="muted" style="margin-bottom:8px">${[p.fecha, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="muted" style="margin-bottom:8px">${[dt, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
       <table class="grid"><tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th><th>${t("col_pts")}</th></tr>${rows}</table>`;
     cont.appendChild(card);
   });

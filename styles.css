@@ -169,7 +169,8 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
 .team .name { font-weight: 700; font-size: .95rem; margin-top: 4px; }
 .vs { color: var(--gris); font-weight: 700; }
 .meta { text-align: center; color: var(--gris); font-size: .82rem; margin-bottom: 10px; }
-.countdown { text-align: center; font-weight: 700; color: var(--guinda); margin: 6px 0 12px; }
+.countdown { text-align: center; font-weight: 700; color: var(--guinda); margin: 6px 0 4px; }
+.closes-note { text-align: center; font-size: .76rem; margin: 0 0 10px; }
 
 .predict {
   display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px;
