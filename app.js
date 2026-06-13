@@ -28,6 +28,7 @@ const I18N = {
     admin: "Admin",
     admin_note: "Acciones protegidas por PIN de administrador.", admin_pin_label: "PIN admin:",
     load_result: "Cargar resultado real",
+    admin_pin_title: "Cambiar PIN de un participante", admin_pin_force: "Obligar a cambiarlo en el primer ingreso",
     enter_pred_for: "Meter pronóstico de alguien (lo mandó por chat)",
     sync: "Sincronizar", resync: "Re-sincronizar calendario y resultados", save: "Guardar",
     footer: "Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.",
@@ -79,6 +80,7 @@ const I18N = {
     admin: "Admin",
     admin_note: "Actions protected by admin PIN.", admin_pin_label: "Admin PIN:",
     load_result: "Enter actual result",
+    admin_pin_title: "Change a participant's PIN", admin_pin_force: "Require them to change it on first sign-in",
     enter_pred_for: "Add someone's prediction (sent via chat)",
     sync: "Sync", resync: "Re-sync calendar and results", save: "Save",
     footer: "Internal use, non-profit. Score data from a public source.",
@@ -130,6 +132,7 @@ const I18N = {
     admin: "Админ",
     admin_note: "Действия защищены PIN-кодом администратора.", admin_pin_label: "PIN админа:",
     load_result: "Внести реальный счёт",
+    admin_pin_title: "Изменить PIN участника", admin_pin_force: "Требовать смены при первом входе",
     enter_pred_for: "Добавить чей-то прогноз (прислан в чат)",
     sync: "Синхронизация", resync: "Пересинхронизировать календарь и результаты", save: "Сохранить",
     footer: "Для внутреннего использования, без коммерции. Данные о счёте из открытого источника.",
@@ -181,6 +184,7 @@ const I18N = {
     admin: "Admin",
     admin_note: "Aktionen durch Admin-PIN geschützt.", admin_pin_label: "Admin-PIN:",
     load_result: "Echtes Ergebnis eintragen",
+    admin_pin_title: "PIN eines Teilnehmers ändern", admin_pin_force: "Änderung beim ersten Login erzwingen",
     enter_pred_for: "Tipp von jemandem eintragen (per Chat geschickt)",
     sync: "Synchronisieren", resync: "Kalender und Ergebnisse neu synchronisieren", save: "Speichern",
     footer: "Interne Nutzung, ohne Gewinnabsicht. Ergebnisdaten aus öffentlicher Quelle.",
@@ -748,7 +752,9 @@ function fillSelect(sel, items, fmt) {
 function renderAdminSelects() {
   const partidos = STATE.partidos.map((p) => ({ value: p.id, label: `${p.local} vs ${p.visitante}` }));
   ["#ar-partido", "#ap-partido"].forEach((id) => fillSelect($(id), partidos, (p) => p.label));
-  fillSelect($("#ap-participante"), STATE.participantes.map((p) => ({ value: p, label: p })), (p) => p.label);
+  const personas = STATE.participantes.map((p) => ({ value: p, label: p }));
+  fillSelect($("#ap-participante"), personas, (p) => p.label);
+  fillSelect($("#cp-participante"), personas, (p) => p.label);
 }
 
 $("#ar-save").addEventListener("click", async () => {
@@ -768,6 +774,16 @@ $("#ap-save").addEventListener("click", async () => {
       local: $("#ap-local").value, visitante: $("#ap-visitante").value,
     });
     toast(t("pred_saved")); await load();
+  } catch (e) { toast(trErr(e.message)); }
+});
+$("#cp-save").addEventListener("click", async () => {
+  try {
+    await api("/api/admin/cambiar-pin", {
+      pin: $("#admin-pin").value, participante: $("#cp-participante").value,
+      nuevo: $("#cp-nuevo").value, forzar_cambio: $("#cp-forzar").checked,
+    });
+    $("#cp-nuevo").value = ""; $("#cp-forzar").checked = false;
+    toast(t("pin_updated"));
   } catch (e) { toast(trErr(e.message)); }
 });
 $("#sync-btn").addEventListener("click", async () => {

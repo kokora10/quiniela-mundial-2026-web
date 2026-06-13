@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#b0234a" />
   <title>Quiniela del Grupo 2026</title>
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
   <!-- PWA: permite "Agregar a pantalla de inicio" como acceso directo -->
-  <link rel="manifest" href="manifest.webmanifest?v=11" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=11" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=11" />
+  <link rel="manifest" href="manifest.webmanifest?v=12" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=12" />
+  <link rel="icon" type="image/png" href="icon-192.png?v=12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -164,6 +164,14 @@
             <button id="ap-save" data-i18n="save">Guardar</button>
           </div>
 
+          <h3 data-i18n="admin_pin_title">Cambiar PIN de un participante</h3>
+          <div class="row">
+            <select id="cp-participante"></select>
+            <input type="password" id="cp-nuevo" autocomplete="off" data-i18n-ph="ph_new_pin" placeholder="Nuevo PIN" />
+            <button id="cp-save" data-i18n="save">Guardar</button>
+          </div>
+          <label class="check"><input type="checkbox" id="cp-forzar" /> <span data-i18n="admin_pin_force">Obligar a cambiarlo en el primer ingreso</span></label>
+
           <h3 data-i18n="sync">Sincronizar</h3>
           <button id="sync-btn" data-i18n="resync">Re-sincronizar calendario y resultados</button>
           <p class="muted" id="admin-msg"></p>
@@ -176,6 +184,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>

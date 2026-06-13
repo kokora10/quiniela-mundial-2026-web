@@ -366,3 +366,8 @@ body.dark .pm-legend { color: #ecd9e2; }
   .lb th, .grid th { letter-spacing: .2px; font-size: .6rem; }
   #tabla-full th, #tabla-full td { padding: 9px 3px; }
 }
+
+/* ---- Admin: checkbox de "forzar cambio de PIN" ---- */
+.check { display: flex; align-items: center; gap: 8px; font-size: .85rem;
+  color: var(--muted); margin: 6px 0 2px; font-weight: 600; cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--guinda); }
