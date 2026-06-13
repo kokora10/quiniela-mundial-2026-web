@@ -314,9 +314,11 @@ function toast(msg) {
   setTimeout(() => el2.classList.remove("show"), 2200);
 }
 
-const API_BASE = location.hostname.endsWith("github.io")
-  ? "https://web-production-a57dc.up.railway.app"
-  : "";
+// El backend (API) vive en Railway. Si la página se sirve desde el propio backend
+// se usan rutas relativas; en cualquier otro origen (GitHub Pages, copia local
+// hosteada, etc.) se apunta al backend de Railway.
+const RAILWAY_API = "https://web-production-a57dc.up.railway.app";
+const API_BASE = location.hostname === "web-production-a57dc.up.railway.app" ? "" : RAILWAY_API;
 
 async function api(path, body) {
   const opts = body
