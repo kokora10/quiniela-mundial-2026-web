@@ -81,6 +81,7 @@
 
     <nav class="tabs">
       <button class="tab active" data-view="inicio" data-i18n="tab_home">Inicio</button>
+      <button class="tab" data-view="proximos" data-i18n="tab_upcoming">Próximos partidos</button>
       <button class="tab" data-view="resultados" data-i18n="tab_results">Resultados y tabla</button>
       <button class="tab" data-view="admin" data-i18n="tab_admin">Admin</button>
     </nav>
@@ -108,6 +109,15 @@
           <h2 data-i18n="preds_this_match">Pronósticos de este partido</h2>
           <table class="grid" id="grid-proximo"></table>
         </div>
+      </section>
+
+      <!-- ===== PRÓXIMOS PARTIDOS ===== -->
+      <section id="view-proximos" class="view">
+        <div class="card">
+          <h2 data-i18n="tab_upcoming">Próximos partidos</h2>
+          <p class="muted" data-i18n="upcoming_note">Puedes registrar tu pronóstico de cualquier partido por adelantado.</p>
+        </div>
+        <div id="proximos-list"></div>
       </section>
 
       <!-- ===== RESULTADOS ===== -->

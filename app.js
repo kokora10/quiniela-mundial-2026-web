@@ -18,6 +18,9 @@ const I18N = {
     btn_save_pin: "Guardar PIN", btn_cancel: "Cancelar",
     btn_change_pin: "Cambiar PIN", btn_logout: "Salir", hello: "Hola, {name}",
     tab_home: "Inicio", tab_results: "Resultados y tabla", tab_admin: "Admin",
+    tab_upcoming: "Próximos partidos",
+    upcoming_note: "Puedes registrar tu pronóstico de cualquier partido por adelantado.",
+    no_upcoming: "No hay próximos partidos.",
     leaderboard: "Clasificación", preds_this_match: "Pronósticos de este partido",
     general_table: "Tabla general",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto",
@@ -65,6 +68,9 @@ const I18N = {
     btn_save_pin: "Save PIN", btn_cancel: "Cancel",
     btn_change_pin: "Change PIN", btn_logout: "Sign out", hello: "Hi, {name}",
     tab_home: "Home", tab_results: "Results & table", tab_admin: "Admin",
+    tab_upcoming: "Upcoming matches",
+    upcoming_note: "You can submit your prediction for any match in advance.",
+    no_upcoming: "No upcoming matches.",
     leaderboard: "Leaderboard", preds_this_match: "Predictions for this match",
     general_table: "Standings",
     scoring_title: "Scoring", scoring_exact: "Exact score",
@@ -112,6 +118,9 @@ const I18N = {
     btn_save_pin: "Сохранить PIN", btn_cancel: "Отмена",
     btn_change_pin: "Сменить PIN", btn_logout: "Выйти", hello: "Привет, {name}",
     tab_home: "Главная", tab_results: "Результаты и таблица", tab_admin: "Админ",
+    tab_upcoming: "Ближайшие матчи",
+    upcoming_note: "Вы можете заранее сделать прогноз на любой матч.",
+    no_upcoming: "Нет ближайших матчей.",
     leaderboard: "Таблица лидеров", preds_this_match: "Прогнозы на этот матч",
     general_table: "Турнирная таблица",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт",
@@ -159,6 +168,9 @@ const I18N = {
     btn_save_pin: "PIN speichern", btn_cancel: "Abbrechen",
     btn_change_pin: "PIN ändern", btn_logout: "Abmelden", hello: "Hallo, {name}",
     tab_home: "Start", tab_results: "Ergebnisse & Tabelle", tab_admin: "Admin",
+    tab_upcoming: "Kommende Spiele",
+    upcoming_note: "Du kannst deinen Tipp für jedes Spiel im Voraus abgeben.",
+    no_upcoming: "Keine kommenden Spiele.",
     leaderboard: "Rangliste", preds_this_match: "Tipps für dieses Spiel",
     general_table: "Gesamttabelle",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis",
@@ -428,6 +440,7 @@ function render() {
   renderProximo();
   renderLeaderboard();
   renderGridProximo();
+  renderProximos();
   renderTablaFull();
   renderResultados();
   renderAdminSelects();
@@ -561,6 +574,67 @@ function renderGridProximo() {
     tr.innerHTML = `<td>${esc(nom)}</td><td>${marc}</td>`;
     tb.appendChild(tr);
   });
+}
+
+// ---- Próximos partidos (calendario completo para pronosticar por adelantado) ----
+let upMatches = [];
+function renderProximos() {
+  const cont = $("#proximos-list");
+  cont.innerHTML = "";
+  upMatches = STATE.partidos.filter((p) => p.estado !== "finalizado");
+  if (!upMatches.length) { cont.appendChild(el("div", "card muted", t("no_upcoming"))); return; }
+
+  upMatches.forEach((p, i) => {
+    const mine = predByPartido(p.id)[me];
+    const mx = fmtKickoffMX(p.kickoff_utc);
+    const when = mx ? `${mx.date} · ${mx.time} ${t("center_mx")}` : (p.fecha || "");
+    const badge = p.abierto
+      ? `<span class="badge open">${t("st_open")}</span>`
+      : `<span class="badge closed">${t("st_closed")}</span>`;
+
+    let form;
+    if (p.abierto) {
+      form = `<div class="predict">
+        <input type="number" min="0" max="20" class="score" id="upl${i}" value="${mine ? mine.local : ""}" />
+        <span>–</span>
+        <input type="number" min="0" max="20" class="score" id="upv${i}" value="${mine ? mine.visitante : ""}" />
+        <button class="up-save" data-i="${i}">${mine ? t("update") : t("send")}</button>
+      </div>`;
+    } else {
+      form = mine
+        ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong></p>`
+        : `<p class="muted" style="text-align:center">${t("st_closed")}</p>`;
+    }
+
+    const card = el("div", "card up-card");
+    card.innerHTML = `
+      <div class="up-head">
+        <div class="up-teams">${flag(p.local)} ${esc(p.local)} <span class="vs">${t("vs")}</span> ${esc(p.visitante)} ${flag(p.visitante)}</div>
+        ${badge}
+      </div>
+      <div class="muted up-when">${[when, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
+      ${form}`;
+    cont.appendChild(card);
+  });
+
+  cont.querySelectorAll(".up-save").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const i = btn.dataset.i, p = upMatches[i];
+      if (p) saveUpPred(p.id, $("#upl" + i).value, $("#upv" + i).value);
+    });
+  });
+}
+
+async function saveUpPred(pid, local, visitante) {
+  if (local === "" || visitante === "") { toast(t("complete_score")); return; }
+  try {
+    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante });
+    toast(t("pred_saved"));
+    await load();
+  } catch (e) {
+    toast(trErr(e.message));
+    if (/PIN|identidad|identity|неверн|falsch/i.test(e.message)) { clearSession(); showLogin(); }
+  }
 }
 
 function renderTablaFull() {
