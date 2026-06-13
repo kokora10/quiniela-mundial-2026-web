@@ -55,6 +55,13 @@
 }
 .whoami #hola { flex: 1; font-weight: 700; }
 
+.lang-row { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.lang-select {
+  padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
+  font-size: .8rem; background: #fff; color: #1d1d20; cursor: pointer;
+}
+.whoami .lang-select { padding: 4px 6px; border: none; }
+
 body {
   margin: 0;
   font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;

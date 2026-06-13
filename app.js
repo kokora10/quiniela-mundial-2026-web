@@ -1,12 +1,232 @@
 "use strict";
 
-// ---- Banderas como emoji Unicode (neutral, sin assets/escudos oficiales) ----
+// ====================== i18n ======================
+const I18N = {
+  es: {
+    app_subtitle_login: "Acceso solo para participantes del grupo.",
+    how_to_enter: "Cómo entrar",
+    step1: "Elige tu nombre.",
+    step2: "Escribe tu PIN. Si es tu primer ingreso, usa el PIN inicial que te dio el administrador.",
+    step3: "En el primer ingreso tendrás que crear tu PIN personal.",
+    label_name: "Nombre", opt_choose_name: "— elige tu nombre —",
+    label_pin: "PIN", ph_pin: "Tu PIN", btn_enter: "Entrar",
+    change_title_create: "Crea tu PIN", change_title_change: "Cambiar PIN",
+    change_sub_forced: "Es tu primer ingreso: define tu PIN personal antes de continuar.",
+    change_sub_normal: "Define un nuevo PIN. Necesitarás recordarlo para entrar.",
+    label_new_pin: "Nuevo PIN", ph_new_pin: "Nuevo PIN",
+    label_repeat_pin: "Repite el nuevo PIN", ph_confirm: "Confírmalo",
+    btn_save_pin: "Guardar PIN", btn_cancel: "Cancelar",
+    btn_change_pin: "Cambiar PIN", btn_logout: "Salir", hello: "Hola, {name}",
+    tab_home: "Inicio", tab_results: "Resultados y tabla", tab_admin: "Admin",
+    leaderboard: "Clasificación", preds_this_match: "Pronósticos de este partido",
+    general_table: "Tabla general", admin: "Admin",
+    admin_note: "Acciones protegidas por PIN de administrador.", admin_pin_label: "PIN admin:",
+    load_result: "Cargar resultado real",
+    enter_pred_for: "Meter pronóstico de alguien (lo mandó por chat)",
+    sync: "Sincronizar", resync: "Re-sincronizar calendario y resultados", save: "Guardar",
+    footer: "Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.",
+    loading: "Cargando…", next_match: "Próximo partido",
+    st_final: "Finalizado", st_open: "Abierto", st_closed: "Cerrado",
+    vs: "vs", center_mx: "(Centro MX)", closes_in: "Cierra en {t}", closed_clock: "⏱ Cerrado",
+    final_result: "Resultado final:", your_pred: "Tu pronóstico:",
+    closed_no_pred: "Ya cerró. No registraste pronóstico.",
+    send: "Enviar", update: "Actualizar", complete_score: "Completa el marcador",
+    pred_saved: "Pronóstico guardado", result_saved: "Resultado guardado",
+    col_num: "#", col_participant: "Participante", col_pts: "Pts", col_pred: "Pronóstico",
+    col_exact: "Exactos", col_result: "Result.", col_played: "Jug.",
+    no_matches: "Aún no hay partidos cargados.", no_finished: "Aún no hay partidos finalizados.",
+    tag_exact: "exacto", tag_result: "resultado",
+    pin_updated: "PIN actualizado", pins_mismatch: "Los PIN no coinciden.",
+    need_name_pin: "Elige tu nombre y escribe tu PIN.",
+    syncing: "Sincronizando…", sync_summary: "Calendario: {cal} · Resultados nuevos: {n}",
+    err_bad_login: "Nombre o PIN incorrecto", err_bad_current_pin: "Nombre o PIN actual incorrecto",
+    err_bad_identity: "Identidad o PIN incorrecto", err_too_many: "Demasiados intentos. Intenta más tarde",
+    err_pred_closed: "Pronósticos cerrados para este partido", err_bad_score: "Marcador inválido",
+    err_bad_admin_pin: "PIN incorrecto", err_pin_same: "El nuevo PIN debe ser distinto al actual",
+    err_pin_short: "El nuevo PIN debe tener al menos {n} caracteres", err_generic: "Error",
+  },
+  en: {
+    app_subtitle_login: "Access for group participants only.",
+    how_to_enter: "How to sign in",
+    step1: "Choose your name.",
+    step2: "Enter your PIN. On your first sign-in, use the initial PIN the admin gave you.",
+    step3: "On your first sign-in you'll have to create your personal PIN.",
+    label_name: "Name", opt_choose_name: "— choose your name —",
+    label_pin: "PIN", ph_pin: "Your PIN", btn_enter: "Sign in",
+    change_title_create: "Create your PIN", change_title_change: "Change PIN",
+    change_sub_forced: "It's your first sign-in: set your personal PIN before continuing.",
+    change_sub_normal: "Set a new PIN. You'll need to remember it to sign in.",
+    label_new_pin: "New PIN", ph_new_pin: "New PIN",
+    label_repeat_pin: "Repeat the new PIN", ph_confirm: "Confirm it",
+    btn_save_pin: "Save PIN", btn_cancel: "Cancel",
+    btn_change_pin: "Change PIN", btn_logout: "Sign out", hello: "Hi, {name}",
+    tab_home: "Home", tab_results: "Results & table", tab_admin: "Admin",
+    leaderboard: "Leaderboard", preds_this_match: "Predictions for this match",
+    general_table: "Standings", admin: "Admin",
+    admin_note: "Actions protected by admin PIN.", admin_pin_label: "Admin PIN:",
+    load_result: "Enter actual result",
+    enter_pred_for: "Add someone's prediction (sent via chat)",
+    sync: "Sync", resync: "Re-sync calendar and results", save: "Save",
+    footer: "Internal use, non-profit. Score data from a public source.",
+    loading: "Loading…", next_match: "Next match",
+    st_final: "Finished", st_open: "Open", st_closed: "Closed",
+    vs: "vs", center_mx: "(Central MX)", closes_in: "Closes in {t}", closed_clock: "⏱ Closed",
+    final_result: "Final result:", your_pred: "Your prediction:",
+    closed_no_pred: "Closed. You didn't submit a prediction.",
+    send: "Submit", update: "Update", complete_score: "Fill in the score",
+    pred_saved: "Prediction saved", result_saved: "Result saved",
+    col_num: "#", col_participant: "Participant", col_pts: "Pts", col_pred: "Prediction",
+    col_exact: "Exact", col_result: "Result", col_played: "Played",
+    no_matches: "No matches loaded yet.", no_finished: "No finished matches yet.",
+    tag_exact: "exact", tag_result: "result",
+    pin_updated: "PIN updated", pins_mismatch: "PINs don't match.",
+    need_name_pin: "Choose your name and enter your PIN.",
+    syncing: "Syncing…", sync_summary: "Calendar: {cal} · New results: {n}",
+    err_bad_login: "Wrong name or PIN", err_bad_current_pin: "Wrong name or current PIN",
+    err_bad_identity: "Wrong identity or PIN", err_too_many: "Too many attempts. Try again later",
+    err_pred_closed: "Predictions closed for this match", err_bad_score: "Invalid score",
+    err_bad_admin_pin: "Wrong PIN", err_pin_same: "The new PIN must be different from the current one",
+    err_pin_short: "The new PIN must be at least {n} characters", err_generic: "Error",
+  },
+  ru: {
+    app_subtitle_login: "Доступ только для участников группы.",
+    how_to_enter: "Как войти",
+    step1: "Выберите своё имя.",
+    step2: "Введите PIN-код. При первом входе используйте начальный PIN от администратора.",
+    step3: "При первом входе нужно будет создать свой личный PIN-код.",
+    label_name: "Имя", opt_choose_name: "— выберите своё имя —",
+    label_pin: "PIN-код", ph_pin: "Ваш PIN", btn_enter: "Войти",
+    change_title_create: "Создайте PIN-код", change_title_change: "Сменить PIN",
+    change_sub_forced: "Это ваш первый вход: задайте личный PIN-код, прежде чем продолжить.",
+    change_sub_normal: "Задайте новый PIN-код. Его нужно запомнить для входа.",
+    label_new_pin: "Новый PIN", ph_new_pin: "Новый PIN",
+    label_repeat_pin: "Повторите новый PIN", ph_confirm: "Подтвердите",
+    btn_save_pin: "Сохранить PIN", btn_cancel: "Отмена",
+    btn_change_pin: "Сменить PIN", btn_logout: "Выйти", hello: "Привет, {name}",
+    tab_home: "Главная", tab_results: "Результаты и таблица", tab_admin: "Админ",
+    leaderboard: "Таблица лидеров", preds_this_match: "Прогнозы на этот матч",
+    general_table: "Турнирная таблица", admin: "Админ",
+    admin_note: "Действия защищены PIN-кодом администратора.", admin_pin_label: "PIN админа:",
+    load_result: "Внести реальный счёт",
+    enter_pred_for: "Добавить чей-то прогноз (прислан в чат)",
+    sync: "Синхронизация", resync: "Пересинхронизировать календарь и результаты", save: "Сохранить",
+    footer: "Для внутреннего использования, без коммерции. Данные о счёте из открытого источника.",
+    loading: "Загрузка…", next_match: "Следующий матч",
+    st_final: "Завершён", st_open: "Открыт", st_closed: "Закрыт",
+    vs: "vs", center_mx: "(Центр. Мексика)", closes_in: "Закроется через {t}", closed_clock: "⏱ Закрыто",
+    final_result: "Итоговый счёт:", your_pred: "Ваш прогноз:",
+    closed_no_pred: "Закрыто. Вы не сделали прогноз.",
+    send: "Отправить", update: "Обновить", complete_score: "Укажите счёт",
+    pred_saved: "Прогноз сохранён", result_saved: "Счёт сохранён",
+    col_num: "#", col_participant: "Участник", col_pts: "Очки", col_pred: "Прогноз",
+    col_exact: "Точные", col_result: "Исход", col_played: "Игр",
+    no_matches: "Матчи ещё не загружены.", no_finished: "Завершённых матчей пока нет.",
+    tag_exact: "точный", tag_result: "исход",
+    pin_updated: "PIN обновлён", pins_mismatch: "PIN-коды не совпадают.",
+    need_name_pin: "Выберите имя и введите PIN.",
+    syncing: "Синхронизация…", sync_summary: "Календарь: {cal} · Новых результатов: {n}",
+    err_bad_login: "Неверное имя или PIN", err_bad_current_pin: "Неверное имя или текущий PIN",
+    err_bad_identity: "Неверная личность или PIN", err_too_many: "Слишком много попыток. Повторите позже",
+    err_pred_closed: "Приём прогнозов на этот матч закрыт", err_bad_score: "Неверный счёт",
+    err_bad_admin_pin: "Неверный PIN", err_pin_same: "Новый PIN должен отличаться от текущего",
+    err_pin_short: "Новый PIN должен содержать не менее {n} символов", err_generic: "Ошибка",
+  },
+  de: {
+    app_subtitle_login: "Zugang nur für Gruppenmitglieder.",
+    how_to_enter: "So meldest du dich an",
+    step1: "Wähle deinen Namen.",
+    step2: "Gib deine PIN ein. Beim ersten Mal die Anfangs-PIN des Administrators verwenden.",
+    step3: "Beim ersten Anmelden musst du deine persönliche PIN erstellen.",
+    label_name: "Name", opt_choose_name: "— wähle deinen Namen —",
+    label_pin: "PIN", ph_pin: "Deine PIN", btn_enter: "Anmelden",
+    change_title_create: "PIN erstellen", change_title_change: "PIN ändern",
+    change_sub_forced: "Erste Anmeldung: Lege deine persönliche PIN fest, bevor es weitergeht.",
+    change_sub_normal: "Lege eine neue PIN fest. Du brauchst sie zum Anmelden.",
+    label_new_pin: "Neue PIN", ph_new_pin: "Neue PIN",
+    label_repeat_pin: "Neue PIN wiederholen", ph_confirm: "Bestätigen",
+    btn_save_pin: "PIN speichern", btn_cancel: "Abbrechen",
+    btn_change_pin: "PIN ändern", btn_logout: "Abmelden", hello: "Hallo, {name}",
+    tab_home: "Start", tab_results: "Ergebnisse & Tabelle", tab_admin: "Admin",
+    leaderboard: "Rangliste", preds_this_match: "Tipps für dieses Spiel",
+    general_table: "Gesamttabelle", admin: "Admin",
+    admin_note: "Aktionen durch Admin-PIN geschützt.", admin_pin_label: "Admin-PIN:",
+    load_result: "Echtes Ergebnis eintragen",
+    enter_pred_for: "Tipp von jemandem eintragen (per Chat geschickt)",
+    sync: "Synchronisieren", resync: "Kalender und Ergebnisse neu synchronisieren", save: "Speichern",
+    footer: "Interne Nutzung, ohne Gewinnabsicht. Ergebnisdaten aus öffentlicher Quelle.",
+    loading: "Laden…", next_match: "Nächstes Spiel",
+    st_final: "Beendet", st_open: "Offen", st_closed: "Geschlossen",
+    vs: "vs", center_mx: "(Zentral-MX)", closes_in: "Schließt in {t}", closed_clock: "⏱ Geschlossen",
+    final_result: "Endergebnis:", your_pred: "Dein Tipp:",
+    closed_no_pred: "Geschlossen. Du hast keinen Tipp abgegeben.",
+    send: "Abschicken", update: "Aktualisieren", complete_score: "Ergebnis eingeben",
+    pred_saved: "Tipp gespeichert", result_saved: "Ergebnis gespeichert",
+    col_num: "#", col_participant: "Teilnehmer", col_pts: "Pkt", col_pred: "Tipp",
+    col_exact: "Exakt", col_result: "Tendenz", col_played: "Sp.",
+    no_matches: "Noch keine Spiele geladen.", no_finished: "Noch keine beendeten Spiele.",
+    tag_exact: "exakt", tag_result: "Tendenz",
+    pin_updated: "PIN aktualisiert", pins_mismatch: "PINs stimmen nicht überein.",
+    need_name_pin: "Wähle deinen Namen und gib deine PIN ein.",
+    syncing: "Synchronisieren…", sync_summary: "Kalender: {cal} · Neue Ergebnisse: {n}",
+    err_bad_login: "Falscher Name oder PIN", err_bad_current_pin: "Falscher Name oder aktuelle PIN",
+    err_bad_identity: "Falsche Identität oder PIN", err_too_many: "Zu viele Versuche. Später erneut versuchen",
+    err_pred_closed: "Tipps für dieses Spiel geschlossen", err_bad_score: "Ungültiges Ergebnis",
+    err_bad_admin_pin: "Falsche PIN", err_pin_same: "Die neue PIN muss sich von der aktuellen unterscheiden",
+    err_pin_short: "Die neue PIN muss mindestens {n} Zeichen haben", err_generic: "Fehler",
+  },
+};
+
+let lang = localStorage.getItem("q_lang");
+if (!I18N[lang]) lang = (navigator.language || "es").slice(0, 2);
+if (!I18N[lang]) lang = "es";
+
+function t(key, vars) {
+  let s = (I18N[lang] && I18N[lang][key]) || I18N.es[key] || key;
+  if (vars) for (const k in vars) s = s.replaceAll("{" + k + "}", vars[k]);
+  return s;
+}
+
+// Traduce los mensajes de error que devuelve el backend (en español).
+const SERVER_ERR = {
+  "Nombre o PIN incorrecto": "err_bad_login",
+  "Nombre o PIN actual incorrecto": "err_bad_current_pin",
+  "Identidad o PIN incorrecto": "err_bad_identity",
+  "Demasiados intentos. Intenta mas tarde": "err_too_many",
+  "Pronosticos cerrados para este partido": "err_pred_closed",
+  "Marcador invalido": "err_bad_score",
+  "PIN incorrecto": "err_bad_admin_pin",
+  "El nuevo PIN debe ser distinto al actual": "err_pin_same",
+  "Error": "err_generic",
+};
+function trErr(msg) {
+  if (!msg) return t("err_generic");
+  if (SERVER_ERR[msg]) return t(SERVER_ERR[msg]);
+  const m = msg.match(/al menos (\d+)/);
+  if (m) return t("err_pin_short", { n: m[1] });
+  return msg;
+}
+
+function applyStaticI18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((e) => { e.textContent = t(e.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach((e) => { e.placeholder = t(e.dataset.i18nPh); });
+  document.querySelectorAll(".lang-select").forEach((s) => { s.value = lang; });
+  if (me) $("#hola").textContent = t("hello", { name: me });
+}
+
+function setLang(l) {
+  if (!I18N[l]) return;
+  lang = l;
+  localStorage.setItem("q_lang", l);
+  applyStaticI18n();
+  if (STATE && !$("#app-screen").classList.contains("hidden")) render();
+}
+
+// ====================== Banderas (emoji Unicode, sin assets oficiales) ======================
 const FLAG = {
-  // Variantes en español (datos del grupo)
   "Canadá": "🇨🇦", "Bosnia y Herzegovina": "🇧🇦", "Estados Unidos": "🇺🇸",
   "México": "🇲🇽", "Brasil": "🇧🇷", "España": "🇪🇸", "Francia": "🇫🇷",
   "Alemania": "🇩🇪", "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-  // Selecciones (nombres de la fuente)
   "Algeria": "🇩🇿", "Argentina": "🇦🇷", "Australia": "🇦🇺", "Austria": "🇦🇹",
   "Belgium": "🇧🇪", "Bosnia and Herzegovina": "🇧🇦", "Brazil": "🇧🇷",
   "Canada": "🇨🇦", "Cape Verde": "🇨🇻", "Colombia": "🇨🇴", "Croatia": "🇭🇷",
@@ -21,7 +241,7 @@ const FLAG = {
   "Switzerland": "🇨🇭", "Tunisia": "🇹🇳", "Turkey": "🇹🇷", "United States": "🇺🇸",
   "USA": "🇺🇸", "Uruguay": "🇺🇾", "Uzbekistan": "🇺🇿",
 };
-const flag = (t) => FLAG[t] || "⚽";
+const flag = (x) => FLAG[x] || "⚽";
 
 const $ = (s) => document.querySelector(s);
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => (
@@ -54,15 +274,13 @@ function clearSession() {
 }
 
 function toast(msg) {
-  let t = $(".toast");
-  if (!t) { t = el("div", "toast"); document.body.appendChild(t); }
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
+  let el2 = $(".toast");
+  if (!el2) { el2 = el("div", "toast"); document.body.appendChild(el2); }
+  el2.textContent = msg;
+  el2.classList.add("show");
+  setTimeout(() => el2.classList.remove("show"), 2200);
 }
 
-// Si la página se sirve desde GitHub Pages, la API vive en el backend de Railway;
-// si se sirve desde el propio backend, se usan rutas relativas.
 const API_BASE = location.hostname.endsWith("github.io")
   ? "https://web-production-a57dc.up.railway.app"
   : "";
@@ -83,35 +301,29 @@ function show(screen) {
     $("#" + id).classList.toggle("hidden", id !== screen);
   });
 }
-
 function showLogin() {
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   show("login-screen");
   $("#login-pin").value = "";
   $("#login-error").textContent = "";
 }
-
 function showChange(forced) {
   show("change-screen");
   $("#new-pin").value = ""; $("#new-pin2").value = "";
   $("#change-error").textContent = "";
-  $("#change-title").textContent = forced ? "Crea tu PIN" : "Cambiar PIN";
-  $("#change-sub").textContent = forced
-    ? "Es tu primer ingreso: define tu PIN personal antes de continuar."
-    : "Define un nuevo PIN. Necesitarás recordarlo para entrar.";
+  $("#change-title").textContent = forced ? t("change_title_create") : t("change_title_change");
+  $("#change-sub").textContent = forced ? t("change_sub_forced") : t("change_sub_normal");
   $("#change-cancel").classList.toggle("hidden", forced);
 }
-
 function showApp() {
   show("app-screen");
-  $("#hola").textContent = "Hola, " + me;
+  $("#hola").textContent = t("hello", { name: me });
   load();
   if (!pollTimer) pollTimer = setInterval(load, 30000);
 }
 
-// ============ Auth handlers ============
+// ============ Auth ============
 async function fillNombres() {
-  // Llena el select de login con la lista publica de participantes.
   try {
     const st = await api("/api/state");
     const sel = $("#login-nombre");
@@ -121,40 +333,37 @@ async function fillNombres() {
     $("#site-name").textContent = st.site_name;
     $("#login-title").textContent = st.site_name;
     document.title = st.site_name;
-  } catch (e) { /* la app sigue usable al reintentar */ }
+  } catch (e) { /* reintenta al interactuar */ }
 }
+
+document.querySelectorAll(".lang-select").forEach((s) => {
+  s.addEventListener("change", (e) => setLang(e.target.value));
+});
 
 $("#login-btn").addEventListener("click", async () => {
   const nombre = $("#login-nombre").value;
   const pin = $("#login-pin").value;
-  if (!nombre || !pin) { $("#login-error").textContent = "Elige tu nombre y escribe tu PIN."; return; }
+  if (!nombre || !pin) { $("#login-error").textContent = t("need_name_pin"); return; }
   try {
     const r = await api("/api/login", { participante: nombre, pin });
     saveSession(nombre, pin);
-    if (r.must_change) {
-      sessionStorage.setItem("q_must", "1");
-      showChange(true);
-    } else {
-      sessionStorage.removeItem("q_must");
-      showApp();
-    }
-  } catch (e) { $("#login-error").textContent = e.message; }
+    if (r.must_change) { sessionStorage.setItem("q_must", "1"); showChange(true); }
+    else { sessionStorage.removeItem("q_must"); showApp(); }
+  } catch (e) { $("#login-error").textContent = trErr(e.message); }
 });
-
 $("#login-pin").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#login-btn").click(); });
 
 $("#change-btn").addEventListener("click", async () => {
   const nuevo = $("#new-pin").value, nuevo2 = $("#new-pin2").value;
-  if (nuevo !== nuevo2) { $("#change-error").textContent = "Los PIN no coinciden."; return; }
+  if (nuevo !== nuevo2) { $("#change-error").textContent = t("pins_mismatch"); return; }
   try {
     await api("/api/cambiar-pin", { participante: me, pin: sessionPin, nuevo });
-    saveSession(me, nuevo);            // la sesion usa el nuevo PIN
+    saveSession(me, nuevo);
     sessionStorage.removeItem("q_must");
-    toast("PIN actualizado");
+    toast(t("pin_updated"));
     showApp();
-  } catch (e) { $("#change-error").textContent = e.message; }
+  } catch (e) { $("#change-error").textContent = trErr(e.message); }
 });
-
 $("#change-cancel").addEventListener("click", () => showApp());
 $("#btn-cambiar").addEventListener("click", () => showChange(false));
 $("#btn-salir").addEventListener("click", () => { clearSession(); showLogin(); });
@@ -169,13 +378,10 @@ document.querySelectorAll(".tab").forEach((btn) => {
   });
 });
 
-// ============ Carga y render de la app ============
+// ============ App ============
 async function load() {
   if ($("#app-screen").classList.contains("hidden")) return;
-  try {
-    STATE = await api("/api/state");
-    render();
-  } catch (e) { console.error(e); }
+  try { STATE = await api("/api/state"); render(); } catch (e) { console.error(e); }
 }
 
 function render() {
@@ -198,45 +404,43 @@ function predByPartido(pid) {
 function renderProximo() {
   const box = $("#proximo");
   const p = STATE.proximo;
-  if (!p) { box.textContent = "Aún no hay partidos cargados."; return; }
+  if (!p) { box.textContent = t("no_matches"); return; }
 
   const abierto = p.abierto;
   const finalizado = p.estado === "finalizado";
   const mine = predByPartido(p.id)[me];
   const badge = finalizado
-    ? `<span class="badge closed">Finalizado</span>`
-    : abierto ? `<span class="badge open">Abierto</span>`
-              : `<span class="badge closed">Cerrado</span>`;
-
+    ? `<span class="badge closed">${t("st_final")}</span>`
+    : abierto ? `<span class="badge open">${t("st_open")}</span>`
+              : `<span class="badge closed">${t("st_closed")}</span>`;
   const real = finalizado ? `${p.res_local} – ${p.res_visitante}` : "";
 
   box.innerHTML = `
-    <div class="match-head"><strong>Próximo partido</strong>${badge}</div>
+    <div class="match-head"><strong>${t("next_match")}</strong>${badge}</div>
     <div class="teams">
       <div class="team"><div class="flag">${flag(p.local)}</div><div class="name">${esc(p.local)}</div></div>
-      <div class="vs">${finalizado ? real : "vs"}</div>
+      <div class="vs">${finalizado ? real : t("vs")}</div>
       <div class="team"><div class="flag">${flag(p.visitante)}</div><div class="name">${esc(p.visitante)}</div></div>
     </div>
-    <div class="meta">${[p.fecha, p.hora_centro_mx ? p.hora_centro_mx + " (Centro MX)" : "", p.sede]
+    <div class="meta">${[p.fecha, p.hora_centro_mx ? p.hora_centro_mx + " " + t("center_mx") : "", p.sede]
       .filter(Boolean).map(esc).join(" · ")}</div>
     <div class="countdown" id="cd"></div>
-    <div id="predict-area"></div>
-  `;
+    <div id="predict-area"></div>`;
 
   const area = $("#predict-area");
   if (finalizado) {
-    area.innerHTML = `<p class="muted" style="text-align:center">Resultado final: <strong>${real}</strong></p>`;
+    area.innerHTML = `<p class="muted" style="text-align:center">${t("final_result")} <strong>${real}</strong></p>`;
   } else if (!abierto) {
     area.innerHTML = mine
-      ? `<p class="muted" style="text-align:center">Tu pronóstico: <strong>${mine.local} – ${mine.visitante}</strong></p>`
-      : `<p class="muted" style="text-align:center">Ya cerró. No registraste pronóstico.</p>`;
+      ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong></p>`
+      : `<p class="muted" style="text-align:center">${t("closed_no_pred")}</p>`;
   } else {
     area.innerHTML = `
       <div class="predict">
         <input type="number" min="0" max="20" class="score" id="pl" value="${mine ? mine.local : ""}" />
         <span>–</span>
         <input type="number" min="0" max="20" class="score" id="pv" value="${mine ? mine.visitante : ""}" />
-        <button id="send-pred">${mine ? "Actualizar" : "Enviar"}</button>
+        <button id="send-pred">${mine ? t("update") : t("send")}</button>
       </div>`;
     $("#send-pred").addEventListener("click", () => enviarPronostico(p.id));
   }
@@ -245,17 +449,14 @@ function renderProximo() {
 
 async function enviarPronostico(pid) {
   const local = $("#pl").value, visitante = $("#pv").value;
-  if (local === "" || visitante === "") { toast("Completa el marcador"); return; }
+  if (local === "" || visitante === "") { toast(t("complete_score")); return; }
   try {
-    await api("/api/prediccion", {
-      partido_id: pid, participante: me, pin: sessionPin, local, visitante,
-    });
-    toast("Pronóstico guardado");
+    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante });
+    toast(t("pred_saved"));
     await load();
   } catch (e) {
-    toast(e.message);
-    // PIN invalidado (p.ej. lo cambiaste en otra pestaña): vuelve al login.
-    if (/PIN|identidad/i.test(e.message)) { clearSession(); showLogin(); }
+    toast(trErr(e.message));
+    if (/PIN|identidad|identity|неверн|falsch/i.test(e.message)) { clearSession(); showLogin(); }
   }
 }
 
@@ -267,55 +468,53 @@ function startCountdown(p) {
   const cierre = new Date(p.cierre_utc).getTime();
   const tick = () => {
     const diff = cierre - Date.now();
-    if (diff <= 0) { cd.textContent = "⏱ Cerrado"; clearInterval(countdownTimer); return; }
+    if (diff <= 0) { cd.textContent = t("closed_clock"); clearInterval(countdownTimer); return; }
     const h = Math.floor(diff / 3.6e6);
     const m = Math.floor((diff % 3.6e6) / 6e4);
     const s = Math.floor((diff % 6e4) / 1000);
-    cd.textContent = `Cierra en ${h > 0 ? h + "h " : ""}${m}m ${s}s`;
+    cd.textContent = t("closes_in", { t: `${h > 0 ? h + "h " : ""}${m}m ${s}s` });
   };
   tick();
   countdownTimer = setInterval(tick, 1000);
 }
 
 function renderLeaderboard() {
-  const t = $("#leaderboard");
-  t.innerHTML = `<tr><th>#</th><th>Participante</th><th>Pts</th></tr>`;
+  const tb = $("#leaderboard");
+  tb.innerHTML = `<tr><th>${t("col_num")}</th><th>${t("col_participant")}</th><th>${t("col_pts")}</th></tr>`;
   STATE.tabla.slice(0, 10).forEach((r) => {
     const tr = el("tr", r.participante === me ? "me" : "");
     tr.innerHTML = `<td>${r.posicion}</td><td>${esc(r.participante)}</td><td class="pts">${r.puntos}</td>`;
-    t.appendChild(tr);
+    tb.appendChild(tr);
   });
 }
 
 function renderGridProximo() {
-  const t = $("#grid-proximo");
+  const tb = $("#grid-proximo");
   const p = STATE.proximo;
-  if (!p) { t.innerHTML = ""; return; }
+  if (!p) { tb.innerHTML = ""; return; }
   const preds = predByPartido(p.id);
-  t.innerHTML = `<tr><th>Participante</th><th>Pronóstico</th></tr>`;
+  tb.innerHTML = `<tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th></tr>`;
   STATE.participantes.forEach((nom) => {
     const pr = preds[nom];
-    const marc = pr
-      ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}`
-      : "—";
+    const marc = pr ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}` : "—";
     const tr = el("tr", nom === me ? "me" : "");
     tr.innerHTML = `<td>${esc(nom)}</td><td>${marc}</td>`;
-    t.appendChild(tr);
+    tb.appendChild(tr);
   });
 }
 
 function renderTablaFull() {
-  const t = $("#tabla-full");
-  t.innerHTML = `<tr><th>#</th><th>Participante</th><th>Pts</th><th>Exactos</th><th>Result.</th><th>Jug.</th></tr>`;
+  const tb = $("#tabla-full");
+  tb.innerHTML = `<tr><th>${t("col_num")}</th><th>${t("col_participant")}</th><th>${t("col_pts")}</th>` +
+    `<th>${t("col_exact")}</th><th>${t("col_result")}</th><th>${t("col_played")}</th></tr>`;
   STATE.tabla.forEach((r) => {
     const tr = el("tr", r.participante === me ? "me" : "");
     tr.innerHTML = `<td>${r.posicion}</td><td>${esc(r.participante)}</td>
       <td class="pts">${r.puntos}</td><td>${r.exactos}</td><td>${r.resultados}</td><td>${r.jugados}</td>`;
-    t.appendChild(tr);
+    tb.appendChild(tr);
   });
 }
 
-// Puntos cliente (espejo de scoring.py) solo para mostrar en Resultados.
 function puntos(pl, pv, rl, rv) {
   if (rl == null || rv == null) return null;
   if (pl === rl && pv === rv) return 7;
@@ -328,10 +527,7 @@ function renderResultados() {
   const cont = $("#resultados-list");
   cont.innerHTML = "";
   const jugados = STATE.partidos.filter((p) => p.estado === "finalizado");
-  if (!jugados.length) {
-    cont.appendChild(el("div", "card muted", "Aún no hay partidos finalizados."));
-    return;
-  }
+  if (!jugados.length) { cont.appendChild(el("div", "card muted", t("no_finished"))); return; }
   jugados.forEach((p) => {
     const preds = predByPartido(p.id);
     const card = el("div", "card");
@@ -343,15 +539,15 @@ function renderResultados() {
         return;
       }
       const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante);
-      const tag = pts === 7 ? `<span class="tag exact">exacto</span>`
-                : pts === 2 ? `<span class="tag res">resultado</span>` : "";
+      const tag = pts === 7 ? `<span class="tag exact">${t("tag_exact")}</span>`
+                : pts === 2 ? `<span class="tag res">${t("tag_result")}</span>` : "";
       rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td>
         <td>${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)} ${tag}</td><td class="pts">${pts}</td></tr>`;
     });
     card.innerHTML = `
       <h2>${flag(p.local)} ${esc(p.local)} ${p.res_local} – ${p.res_visitante} ${esc(p.visitante)} ${flag(p.visitante)}</h2>
       <div class="muted" style="margin-bottom:8px">${[p.fecha, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
-      <table class="grid"><tr><th>Participante</th><th>Pronóstico</th><th>Pts</th></tr>${rows}</table>`;
+      <table class="grid"><tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th><th>${t("col_pts")}</th></tr>${rows}</table>`;
     cont.appendChild(card);
   });
 }
@@ -363,10 +559,8 @@ function fillSelect(sel, items, fmt) {
 }
 function renderAdminSelects() {
   const partidos = STATE.partidos.map((p) => ({ value: p.id, label: `${p.local} vs ${p.visitante}` }));
-  ["#ar-partido", "#ap-partido"].forEach((id) =>
-    fillSelect($(id), partidos, (p) => p.label));
-  fillSelect($("#ap-participante"),
-    STATE.participantes.map((p) => ({ value: p, label: p })), (p) => p.label);
+  ["#ar-partido", "#ap-partido"].forEach((id) => fillSelect($(id), partidos, (p) => p.label));
+  fillSelect($("#ap-participante"), STATE.participantes.map((p) => ({ value: p, label: p })), (p) => p.label);
 }
 
 $("#ar-save").addEventListener("click", async () => {
@@ -375,10 +569,9 @@ $("#ar-save").addEventListener("click", async () => {
       pin: $("#admin-pin").value, partido_id: $("#ar-partido").value,
       local: $("#ar-local").value, visitante: $("#ar-visitante").value,
     });
-    toast("Resultado guardado"); await load();
-  } catch (e) { toast(e.message); }
+    toast(t("result_saved")); await load();
+  } catch (e) { toast(trErr(e.message)); }
 });
-
 $("#ap-save").addEventListener("click", async () => {
   try {
     await api("/api/admin/prediccion", {
@@ -386,22 +579,23 @@ $("#ap-save").addEventListener("click", async () => {
       participante: $("#ap-participante").value,
       local: $("#ap-local").value, visitante: $("#ap-visitante").value,
     });
-    toast("Pronóstico guardado"); await load();
-  } catch (e) { toast(e.message); }
+    toast(t("pred_saved")); await load();
+  } catch (e) { toast(trErr(e.message)); }
 });
-
 $("#sync-btn").addEventListener("click", async () => {
-  $("#admin-msg").textContent = "Sincronizando…";
+  $("#admin-msg").textContent = t("syncing");
   try {
     const r = await api("/api/admin/sync", { pin: $("#admin-pin").value });
-    $("#admin-msg").textContent =
-      `Calendario: ${r.calendario ?? r.calendario_error ?? "—"} · Resultados nuevos: ${(r.resultados || []).length}`;
+    $("#admin-msg").textContent = t("sync_summary", {
+      cal: (r.calendario ?? r.calendario_error ?? "—"), n: (r.resultados || []).length,
+    });
     await load();
-  } catch (e) { $("#admin-msg").textContent = e.message; }
+  } catch (e) { $("#admin-msg").textContent = trErr(e.message); }
 });
 
 // ============ Arranque ============
 (async function boot() {
+  applyStaticI18n();
   await fillNombres();
   if (me && sessionPin) {
     if (sessionStorage.getItem("q_must") === "1") showChange(true);

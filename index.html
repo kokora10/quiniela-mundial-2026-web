@@ -11,25 +11,33 @@
   <!-- ===== LOGIN ===== -->
   <section id="login-screen" class="screen">
     <div class="auth-card">
+      <div class="lang-row">
+        <select class="lang-select" aria-label="Idioma / Language">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
       <h1 id="login-title">Quiniela del Grupo 2026</h1>
-      <p class="muted">Acceso solo para participantes del grupo.</p>
+      <p class="muted" data-i18n="app_subtitle_login">Acceso solo para participantes del grupo.</p>
 
       <div class="instrucciones">
-        <strong>Cómo entrar</strong>
+        <strong data-i18n="how_to_enter">Cómo entrar</strong>
         <ol>
-          <li>Elige tu nombre.</li>
-          <li>Escribe tu PIN. Si es tu primer ingreso, usa el <b>PIN inicial</b> que te dio el administrador.</li>
-          <li>En el primer ingreso tendrás que crear tu <b>PIN personal</b>.</li>
+          <li data-i18n="step1">Elige tu nombre.</li>
+          <li data-i18n="step2">Escribe tu PIN. Si es tu primer ingreso, usa el PIN inicial que te dio el administrador.</li>
+          <li data-i18n="step3">En el primer ingreso tendrás que crear tu PIN personal.</li>
         </ol>
       </div>
 
-      <label class="field">Nombre
-        <select id="login-nombre"><option value="">— elige tu nombre —</option></select>
+      <label class="field"><span data-i18n="label_name">Nombre</span>
+        <select id="login-nombre"><option value="" data-i18n="opt_choose_name">— elige tu nombre —</option></select>
       </label>
-      <label class="field">PIN
-        <input type="password" id="login-pin" inputmode="numeric" autocomplete="current-password" placeholder="Tu PIN" />
+      <label class="field"><span data-i18n="label_pin">PIN</span>
+        <input type="password" id="login-pin" inputmode="numeric" autocomplete="current-password" data-i18n-ph="ph_pin" placeholder="Tu PIN" />
       </label>
-      <button id="login-btn">Entrar</button>
+      <button id="login-btn" data-i18n="btn_enter">Entrar</button>
       <p class="error" id="login-error"></p>
     </div>
   </section>
@@ -40,14 +48,14 @@
       <h1 id="change-title">Crea tu PIN</h1>
       <p class="muted" id="change-sub">Por seguridad, define tu PIN personal antes de continuar.</p>
 
-      <label class="field">Nuevo PIN
-        <input type="password" id="new-pin" inputmode="numeric" autocomplete="new-password" placeholder="Nuevo PIN" />
+      <label class="field"><span data-i18n="label_new_pin">Nuevo PIN</span>
+        <input type="password" id="new-pin" inputmode="numeric" autocomplete="new-password" data-i18n-ph="ph_new_pin" placeholder="Nuevo PIN" />
       </label>
-      <label class="field">Repite el nuevo PIN
-        <input type="password" id="new-pin2" inputmode="numeric" autocomplete="new-password" placeholder="Confírmalo" />
+      <label class="field"><span data-i18n="label_repeat_pin">Repite el nuevo PIN</span>
+        <input type="password" id="new-pin2" inputmode="numeric" autocomplete="new-password" data-i18n-ph="ph_confirm" placeholder="Confírmalo" />
       </label>
-      <button id="change-btn">Guardar PIN</button>
-      <button id="change-cancel" class="ghost hidden">Cancelar</button>
+      <button id="change-btn" data-i18n="btn_save_pin">Guardar PIN</button>
+      <button id="change-cancel" class="ghost hidden" data-i18n="btn_cancel">Cancelar</button>
       <p class="error" id="change-error"></p>
     </div>
   </section>
@@ -58,29 +66,35 @@
       <h1 id="site-name">Quiniela del Grupo 2026</h1>
       <div class="whoami">
         <span id="hola"></span>
-        <button id="btn-cambiar" class="link">Cambiar PIN</button>
-        <button id="btn-salir" class="link">Salir</button>
+        <select class="lang-select" aria-label="Idioma / Language">
+          <option value="es">ES</option>
+          <option value="en">EN</option>
+          <option value="ru">RU</option>
+          <option value="de">DE</option>
+        </select>
+        <button id="btn-cambiar" class="link" data-i18n="btn_change_pin">Cambiar PIN</button>
+        <button id="btn-salir" class="link" data-i18n="btn_logout">Salir</button>
       </div>
     </header>
 
     <nav class="tabs">
-      <button class="tab active" data-view="inicio">Inicio</button>
-      <button class="tab" data-view="resultados">Resultados y tabla</button>
-      <button class="tab" data-view="admin">Admin</button>
+      <button class="tab active" data-view="inicio" data-i18n="tab_home">Inicio</button>
+      <button class="tab" data-view="resultados" data-i18n="tab_results">Resultados y tabla</button>
+      <button class="tab" data-view="admin" data-i18n="tab_admin">Admin</button>
     </nav>
 
     <main>
       <!-- ===== INICIO ===== -->
       <section id="view-inicio" class="view active">
-        <div id="proximo" class="card match-card">Cargando…</div>
+        <div id="proximo" class="card match-card" data-i18n="loading">Cargando…</div>
 
         <div class="card">
-          <h2>Leaderboard</h2>
+          <h2 data-i18n="leaderboard">Leaderboard</h2>
           <table class="lb" id="leaderboard"></table>
         </div>
 
         <div class="card">
-          <h2>Pronósticos de este partido</h2>
+          <h2 data-i18n="preds_this_match">Pronósticos de este partido</h2>
           <table class="grid" id="grid-proximo"></table>
         </div>
       </section>
@@ -88,7 +102,7 @@
       <!-- ===== RESULTADOS ===== -->
       <section id="view-resultados" class="view">
         <div class="card">
-          <h2>Tabla general</h2>
+          <h2 data-i18n="general_table">Tabla general</h2>
           <table class="lb" id="tabla-full"></table>
         </div>
         <div id="resultados-list"></div>
@@ -97,38 +111,38 @@
       <!-- ===== ADMIN ===== -->
       <section id="view-admin" class="view">
         <div class="card">
-          <h2>Admin</h2>
-          <p class="muted">Acciones protegidas por PIN de administrador.</p>
-          <label>PIN admin: <input type="password" id="admin-pin" autocomplete="off" /></label>
+          <h2 data-i18n="admin">Admin</h2>
+          <p class="muted" data-i18n="admin_note">Acciones protegidas por PIN de administrador.</p>
+          <label><span data-i18n="admin_pin_label">PIN admin:</span> <input type="password" id="admin-pin" autocomplete="off" /></label>
 
-          <h3>Cargar resultado real</h3>
+          <h3 data-i18n="load_result">Cargar resultado real</h3>
           <div class="row">
             <select id="ar-partido"></select>
             <input type="number" min="0" max="20" id="ar-local" class="score" />
             <span>–</span>
             <input type="number" min="0" max="20" id="ar-visitante" class="score" />
-            <button id="ar-save">Guardar</button>
+            <button id="ar-save" data-i18n="save">Guardar</button>
           </div>
 
-          <h3>Meter pronóstico de alguien (lo mandó por chat)</h3>
+          <h3 data-i18n="enter_pred_for">Meter pronóstico de alguien (lo mandó por chat)</h3>
           <div class="row">
             <select id="ap-partido"></select>
             <select id="ap-participante"></select>
             <input type="number" min="0" max="20" id="ap-local" class="score" />
             <span>–</span>
             <input type="number" min="0" max="20" id="ap-visitante" class="score" />
-            <button id="ap-save">Guardar</button>
+            <button id="ap-save" data-i18n="save">Guardar</button>
           </div>
 
-          <h3>Sincronizar</h3>
-          <button id="sync-btn">Re-sincronizar calendario y resultados</button>
+          <h3 data-i18n="sync">Sincronizar</h3>
+          <button id="sync-btn" data-i18n="resync">Re-sincronizar calendario y resultados</button>
           <p class="muted" id="admin-msg"></p>
         </div>
       </section>
     </main>
 
     <footer class="foot">
-      <p class="muted">Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.</p>
+      <p class="muted" data-i18n="footer">Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.</p>
     </footer>
   </div>
 
