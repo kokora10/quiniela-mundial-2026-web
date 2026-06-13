@@ -74,6 +74,12 @@
 .whoami .themeb { border-color: rgba(255,255,255,.4); }
 
 /* Próximos partidos */
+.up-date {
+  font-weight: 700; color: var(--guinda); font-size: .82rem;
+  text-transform: capitalize; margin: 16px 4px 6px; padding-bottom: 4px;
+  border-bottom: 2px solid var(--line);
+}
+body.dark .up-date { color: #ff6f93; }
 .up-card { padding: 12px 14px; }
 .up-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .up-teams { font-weight: 700; font-size: .92rem; }

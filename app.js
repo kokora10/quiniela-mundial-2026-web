@@ -576,18 +576,32 @@ function renderGridProximo() {
   });
 }
 
-// ---- Próximos partidos (calendario completo para pronosticar por adelantado) ----
+// ---- Próximos partidos (calendario, solo equipos definidos, agrupado por fecha) ----
 let upMatches = [];
+// Cruces de eliminatoria aún sin definir (placeholders): "Winner...", "Runner-up...", "3rd...", "Loser...".
+const isPlaceholder = (name) => /^(Winner|Runner-up|Loser|3rd)\b/i.test(name || "");
+
 function renderProximos() {
   const cont = $("#proximos-list");
   cont.innerHTML = "";
-  upMatches = STATE.partidos.filter((p) => p.estado !== "finalizado");
+  upMatches = STATE.partidos
+    .filter((p) => p.estado !== "finalizado" && !isPlaceholder(p.local) && !isPlaceholder(p.visitante))
+    .sort((a, b) => {
+      const ka = a.kickoff_utc || "9999", kb = b.kickoff_utc || "9999";
+      return ka < kb ? -1 : ka > kb ? 1 : 0;
+    });
   if (!upMatches.length) { cont.appendChild(el("div", "card muted", t("no_upcoming"))); return; }
 
+  let lastDate = null;
   upMatches.forEach((p, i) => {
     const mine = predByPartido(p.id)[me];
     const mx = fmtKickoffMX(p.kickoff_utc);
-    const when = mx ? `${mx.date} · ${mx.time} ${t("center_mx")}` : (p.fecha || "");
+    const dkey = mx ? mx.date : (p.fecha || "—");
+    if (dkey !== lastDate) {
+      lastDate = dkey;
+      cont.appendChild(el("div", "up-date", esc(dkey)));
+    }
+    const hora = mx ? `${mx.time} ${t("center_mx")}` : (p.hora_centro_mx || "");
     const badge = p.abierto
       ? `<span class="badge open">${t("st_open")}</span>`
       : `<span class="badge closed">${t("st_closed")}</span>`;
@@ -612,7 +626,7 @@ function renderProximos() {
         <div class="up-teams">${flag(p.local)} ${esc(p.local)} <span class="vs">${t("vs")}</span> ${esc(p.visitante)} ${flag(p.visitante)}</div>
         ${badge}
       </div>
-      <div class="muted up-when">${[when, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="muted up-when">${[hora, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
       ${form}`;
     cont.appendChild(card);
   });
