@@ -25,6 +25,7 @@ const I18N = {
     general_table: "Tabla general",
     evolution_title: "Evolución de puntos", evo_empty: "Aún no hay partidos puntuados.",
     evo_caption: "Puntos acumulados · eje X = partidos jugados (en orden)",
+    ph_group: "Grupos", ph_r32: "Dieciseisavos", ph_r16: "Octavos", ph_qf: "Cuartos", ph_sf: "Semis", ph_third: "3.er lugar", ph_final: "Final",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
     admin: "Admin",
@@ -80,6 +81,7 @@ const I18N = {
     general_table: "Standings",
     evolution_title: "Points over time", evo_empty: "No scored matches yet.",
     evo_caption: "Cumulative points · X axis = matches played (in order)",
+    ph_group: "Groups", ph_r32: "Round of 32", ph_r16: "Round of 16", ph_qf: "Quarters", ph_sf: "Semis", ph_third: "3rd place", ph_final: "Final",
     scoring_title: "Scoring", scoring_exact: "Exact score",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
     admin: "Admin",
@@ -135,6 +137,7 @@ const I18N = {
     general_table: "Турнирная таблица",
     evolution_title: "Динамика очков", evo_empty: "Пока нет сыгранных матчей.",
     evo_caption: "Накопленные очки · ось X = сыгранные матчи (по порядку)",
+    ph_group: "Группы", ph_r32: "1/16", ph_r16: "1/8", ph_qf: "1/4", ph_sf: "1/2", ph_third: "За 3-е", ph_final: "Финал",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
     admin: "Админ",
@@ -190,6 +193,7 @@ const I18N = {
     general_table: "Gesamttabelle",
     evolution_title: "Punkteverlauf", evo_empty: "Noch keine gewerteten Spiele.",
     evo_caption: "Kumulierte Punkte · X-Achse = gespielte Spiele (der Reihe nach)",
+    ph_group: "Gruppen", ph_r32: "Sechzehntel", ph_r16: "Achtel", ph_qf: "Viertel", ph_sf: "Halbfinale", ph_third: "Platz 3", ph_final: "Finale",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
     admin: "Admin",
@@ -757,6 +761,20 @@ function renderTablaFull() {
 const CHART_COLORS = ["#b0234a", "#169c52", "#2f6fd6", "#e0a800", "#8a4fd6",
   "#e0662a", "#0fa3a3", "#5a7d2a", "#c23b8f", "#3a6ea5", "#9a6b00"];
 
+// Fase de un partido según su id (devuelve la clave i18n).
+function faseDe(id) {
+  if (!/Winner|Runner-up|Loser|3rd/i.test(id)) return "ph_group";   // dos países = grupos
+  if (/Group/i.test(id)) return "ph_r32";                            // posiciones de grupo = 16avos
+  if (/^Loser/i.test(id)) return "ph_third";
+  const nums = (id.match(/Match (\d+)/g) || []).map((s) => +s.slice(6));
+  const mx = Math.max(0, ...nums);
+  if (mx >= 101) return "ph_final";
+  if (mx >= 97) return "ph_sf";
+  if (mx >= 89) return "ph_qf";
+  if (mx >= 73) return "ph_r16";
+  return "ph_group";
+}
+
 function niceMax(max) {
   const raw = Math.max(1, max) / 4;
   const mag = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -806,6 +824,19 @@ function renderEvolucion() {
   let xlab = "";
   for (let i = xstep; i <= N; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
 
+  // Líneas verticales de cambio de fase, con el nombre rotado.
+  let phases = "";
+  let prevFase = null;
+  for (let k = 1; k <= N; k++) {
+    const f = faseDe(fin[k - 1].id);
+    if (f !== prevFase) {
+      const xb = X(k - 1);
+      if (k > 1) phases += `<line x1="${xb.toFixed(1)}" y1="${mt}" x2="${xb.toFixed(1)}" y2="${(mt + ph).toFixed(1)}" class="evo-phase"/>`;
+      phases += `<text transform="rotate(-90 ${xb.toFixed(1)} ${(mt + ph - 4).toFixed(1)})" x="${xb.toFixed(1)}" y="${(mt + ph - 4).toFixed(1)}" dy="9" class="evo-phaselab">${esc(t(f))}</text>`;
+      prevFase = f;
+    }
+  }
+
   let lines = "";
   parts.forEach((nom, idx) => {
     const color = CHART_COLORS[idx % CHART_COLORS.length];
@@ -818,7 +849,7 @@ function renderEvolucion() {
     ${grid}
     <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt + ph}" class="evo-axis"/>
     <line x1="${ml}" y1="${mt + ph}" x2="${W - mr}" y2="${mt + ph}" class="evo-axis"/>
-    ${lines}${xlab}
+    ${phases}${lines}${xlab}
   </svg>`;
 
   const order = parts.slice().sort((a, b) => cum[b][N] - cum[a][N]);

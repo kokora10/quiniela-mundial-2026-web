@@ -392,3 +392,8 @@ body.dark .badge.live { background: #3a3016; color: #f2cd7a; }
 .evo-leg-me { font-weight: 800; color: var(--guinda); }
 .evo-cap { font-size: .72rem; margin-top: 8px; }
 body.dark .evo-legend { color: #ecd9e2; }
+
+/* ---- Líneas de cambio de fase en la gráfica ---- */
+.evo-phase { stroke: var(--guinda); stroke-width: 1; stroke-dasharray: 3 3; opacity: .45; }
+.evo-phaselab { font-size: 8.5px; fill: var(--guinda); font-weight: 700; text-anchor: start; opacity: .8; }
+body.dark .evo-phase, body.dark .evo-phaselab { stroke: #ff97b0; fill: #ff97b0; }
