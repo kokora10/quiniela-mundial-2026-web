@@ -403,3 +403,9 @@ body.dark .evo-phase, body.dark .evo-phaselab { stroke: #ff97b0; fill: #ff97b0; 
 .evo-now { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 2; opacity: .5; }
 .evo-endlab { font-size: 8.5px; font-weight: 700; text-anchor: start; }
 .evo-endlab-me { font-size: 9.5px; }
+
+/* ---- Evolución: barra de progreso "lo que falta" (al pie) ---- */
+.evo-progress { margin-top: 10px; }
+.evo-bar { height: 7px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.evo-bar span { display: block; height: 100%; background: var(--guinda); border-radius: 99px; transition: width .4s ease; }
+.evo-progress .evo-cap { margin-top: 6px; }

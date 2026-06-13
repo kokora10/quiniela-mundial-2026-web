@@ -26,6 +26,7 @@ const I18N = {
     evolution_title: "Evolución de puntos", evo_empty: "Aún no hay partidos puntuados.",
     evo_caption: "Puntos acumulados · eje X = partidos jugados (en orden)",
     evo_progress: "{j}/{m} jugados",
+    evo_left: "faltan {n}",
     ph_group: "Grupos", ph_r32: "Dieciseisavos", ph_r16: "Octavos", ph_qf: "Cuartos", ph_sf: "Semis", ph_third: "3.er lugar", ph_final: "Final",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
@@ -83,6 +84,7 @@ const I18N = {
     evolution_title: "Points over time", evo_empty: "No scored matches yet.",
     evo_caption: "Cumulative points · X axis = matches played (in order)",
     evo_progress: "{j}/{m} played",
+    evo_left: "{n} left",
     ph_group: "Groups", ph_r32: "Round of 32", ph_r16: "Round of 16", ph_qf: "Quarters", ph_sf: "Semis", ph_third: "3rd place", ph_final: "Final",
     scoring_title: "Scoring", scoring_exact: "Exact score",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
@@ -140,6 +142,7 @@ const I18N = {
     evolution_title: "Динамика очков", evo_empty: "Пока нет сыгранных матчей.",
     evo_caption: "Накопленные очки · ось X = сыгранные матчи (по порядку)",
     evo_progress: "{j}/{m} сыграно",
+    evo_left: "осталось {n}",
     ph_group: "Группы", ph_r32: "1/16", ph_r16: "1/8", ph_qf: "1/4", ph_sf: "1/2", ph_third: "За 3-е", ph_final: "Финал",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
@@ -197,6 +200,7 @@ const I18N = {
     evolution_title: "Punkteverlauf", evo_empty: "Noch keine gewerteten Spiele.",
     evo_caption: "Kumulierte Punkte · X-Achse = gespielte Spiele (der Reihe nach)",
     evo_progress: "{j}/{m} gespielt",
+    evo_left: "noch {n}",
     ph_group: "Gruppen", ph_r32: "Sechzehntel", ph_r16: "Achtel", ph_qf: "Viertel", ph_sf: "Halbfinale", ph_third: "Platz 3", ph_final: "Finale",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
@@ -818,11 +822,12 @@ function renderEvolucion() {
     });
   });
 
-  const M = seq.length;                          // total de partidos en el eje
+  const M = seq.length;                          // total (jugados + por jugar)
+  const D = pj;                                  // dominio del eje X = solo lo jugado (zoom)
   const { step, top } = niceMax(Math.max(7, ...parts.map((nom) => cum[nom][pj])));
   const W = 380, H = 240, ml = 24, mr = 72, mt = 12, mb = 24;
   const pw = W - ml - mr, ph = H - mt - mb;
-  const X = (i) => ml + (i / M) * pw;
+  const X = (i) => ml + (D ? (i / D) * pw : 0);
   const Y = (v) => mt + ph - (v / top) * ph;
 
   let grid = "";
@@ -831,14 +836,14 @@ function renderEvolucion() {
     grid += `<line x1="${ml}" y1="${y}" x2="${W - mr}" y2="${y}" class="evo-grid"/>`;
     grid += `<text x="${ml - 3}" y="${(Y(v) + 3).toFixed(1)}" class="evo-ylab">${v}</text>`;
   }
-  const xstep = Math.max(1, Math.ceil(M / 6));
+  const xstep = Math.max(1, Math.ceil(D / 6));
   let xlab = "";
-  for (let i = xstep; i <= M; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
+  for (let i = xstep; i <= D; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
 
-  // Líneas verticales de cambio de fase, con el nombre rotado.
+  // Líneas verticales de cambio de fase (dentro de lo jugado), con el nombre rotado.
   let phases = "";
   let prevFase = null;
-  for (let k = 1; k <= M; k++) {
+  for (let k = 1; k <= D; k++) {
     const f = faseDe(seq[k - 1].id);
     if (f !== prevFase) {
       const xb = X(k - 1);
@@ -847,16 +852,12 @@ function renderEvolucion() {
       prevFase = f;
     }
   }
-  // marcador vertical "ahora" (fin de lo jugado) si quedan partidos
-  let nowLine = "";
-  if (pj < M) nowLine = `<line x1="${X(pj).toFixed(1)}" y1="${mt}" x2="${X(pj).toFixed(1)}" y2="${(mt + ph).toFixed(1)}" class="evo-now"/>`;
 
   let lines = "";
   parts.forEach((nom, idx) => {
     const color = CHART_COLORS[idx % CHART_COLORS.length];
     const solid = cum[nom].slice(0, pj + 1).map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
     lines += `<polyline points="${solid}" fill="none" stroke="${color}" class="evo-line ${nom === me ? "evo-me" : ""}"/>`;
-    if (pj < M) lines += `<line x1="${X(pj).toFixed(1)}" y1="${Y(cum[nom][pj]).toFixed(1)}" x2="${X(M).toFixed(1)}" y2="${Y(cum[nom][pj]).toFixed(1)}" stroke="${color}" class="evo-proj"/>`;
     lines += `<circle cx="${X(pj).toFixed(1)}" cy="${Y(cum[nom][pj]).toFixed(1)}" r="${nom === me ? 3.5 : 2.4}" fill="${color}"/>`;
   });
 
@@ -872,18 +873,24 @@ function renderEvolucion() {
   }
   if (lab[0].y < loLim) lab[0].y = loLim;
   const endlabs = lab.map((L) =>
-    `<text x="${(X(M) + 5).toFixed(1)}" y="${(L.y + 3).toFixed(1)}" fill="${L.color}" class="evo-endlab ${L.nom === me ? "evo-endlab-me" : ""}">${esc(L.nom)} ${L.total}</text>`
+    `<text x="${(X(pj) + 5).toFixed(1)}" y="${(L.y + 3).toFixed(1)}" fill="${L.color}" class="evo-endlab ${L.nom === me ? "evo-endlab-me" : ""}">${esc(L.nom)} ${L.total}</text>`
   ).join("");
 
   const svg = `<svg viewBox="0 0 ${W} ${H}" class="evo-svg" preserveAspectRatio="xMidYMid meet" role="img">
     ${grid}
     <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt + ph}" class="evo-axis"/>
     <line x1="${ml}" y1="${mt + ph}" x2="${W - mr}" y2="${mt + ph}" class="evo-axis"/>
-    ${phases}${nowLine}${lines}${endlabs}${xlab}
+    ${phases}${lines}${endlabs}${xlab}
   </svg>`;
 
-  const jugadosTxt = t("evo_progress", { j: pj, m: M });
-  box.innerHTML = svg + `<div class="muted evo-cap">${esc(jugadosTxt)} · ${t("evo_caption")}</div>`;
+  // Lo que falta, al margen: barra de progreso del torneo.
+  const restantes = Math.max(0, M - pj);
+  const pct = M ? Math.round((pj / M) * 100) : 0;
+  const bar = `<div class="evo-progress">
+      <div class="evo-bar"><span style="width:${pct}%"></span></div>
+      <div class="muted evo-cap">${t("evo_progress", { j: pj, m: M })} · ${t("evo_left", { n: restantes })}</div>
+    </div>`;
+  box.innerHTML = svg + bar;
 }
 
 function puntos(pl, pv, rl, rv) {
