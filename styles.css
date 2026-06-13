@@ -359,3 +359,10 @@ body.dark .toast { background: #2a2e3a; }
 .pm-sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 body.dark .pm { background: #221a20; border-color: #3a2c34; }
 body.dark .pm-legend { color: #ecd9e2; }
+
+/* ---- Móviles angostos: la tabla general (6 columnas) no debe cortarse ---- */
+@media (max-width: 400px) {
+  .lb th, .lb td, .grid th, .grid td { padding: 9px 4px; font-size: .8rem; }
+  .lb th, .grid th { letter-spacing: .2px; font-size: .6rem; }
+  #tabla-full th, #tabla-full td { padding: 9px 3px; }
+}
