@@ -34,6 +34,7 @@ const I18N = {
     footer: "Uso interno, sin fines de lucro. Datos de marcadores de fuente pública.",
     loading: "Cargando…", next_match: "Próximo partido",
     st_final: "Finalizado", st_open: "Abierto", st_closed: "Cerrado",
+    st_live: "En juego", in_play_title: "Partido en juego",
     vs: "vs", center_mx: "(hora de México)", closes_in: "Cierra en {t}", closed_clock: "⏱ Cerrado",
     closes_note: "El pronóstico cierra 1 minuto antes del inicio.",
     pm_label: "Polymarket", pm_draw: "Empate", pm_hint: "Probabilidad implícita del mercado",
@@ -86,6 +87,7 @@ const I18N = {
     footer: "Internal use, non-profit. Score data from a public source.",
     loading: "Loading…", next_match: "Next match",
     st_final: "Finished", st_open: "Open", st_closed: "Closed",
+    st_live: "Live", in_play_title: "Match in progress",
     vs: "vs", center_mx: "(Mexico time)", closes_in: "Closes in {t}", closed_clock: "⏱ Closed",
     closes_note: "Predictions close 1 minute before kickoff.",
     pm_label: "Polymarket", pm_draw: "Draw", pm_hint: "Market-implied probability",
@@ -138,6 +140,7 @@ const I18N = {
     footer: "Для внутреннего использования, без коммерции. Данные о счёте из открытого источника.",
     loading: "Загрузка…", next_match: "Следующий матч",
     st_final: "Завершён", st_open: "Открыт", st_closed: "Закрыт",
+    st_live: "В игре", in_play_title: "Идёт матч",
     vs: "vs", center_mx: "(время Мексики)", closes_in: "Закроется через {t}", closed_clock: "⏱ Закрыто",
     closes_note: "Приём прогнозов закрывается за 1 минуту до начала.",
     pm_label: "Polymarket", pm_draw: "Ничья", pm_hint: "Подразумеваемая рынком вероятность",
@@ -190,6 +193,7 @@ const I18N = {
     footer: "Interne Nutzung, ohne Gewinnabsicht. Ergebnisdaten aus öffentlicher Quelle.",
     loading: "Laden…", next_match: "Nächstes Spiel",
     st_final: "Beendet", st_open: "Offen", st_closed: "Geschlossen",
+    st_live: "Live", in_play_title: "Laufendes Spiel",
     vs: "vs", center_mx: "(Mexiko-Zeit)", closes_in: "Schließt in {t}", closed_clock: "⏱ Geschlossen",
     closes_note: "Tipps schließen 1 Minute vor Anpfiff.",
     pm_label: "Polymarket", pm_draw: "Unentschieden", pm_hint: "Vom Markt implizierte Wahrscheinlichkeit",
@@ -445,6 +449,7 @@ async function load() {
 function render() {
   $("#site-name").textContent = STATE.site_name;
   document.title = STATE.site_name;
+  renderEnJuego();
   renderProximo();
   renderLeaderboard();
   renderGridProximo();
@@ -599,6 +604,40 @@ function renderLeaderboard() {
     const tr = el("tr", r.participante === me ? "me" : "");
     tr.innerHTML = `<td>${r.posicion}</td><td>${esc(r.participante)}</td><td class="pts">${r.puntos}</td>`;
     tb.appendChild(tr);
+  });
+}
+
+// Partido(s) en juego: muestra las proyecciones de todos (los pronósticos ya están
+// cerrados, así que son visibles). Excluye el que ya se muestra como "Próximo".
+function renderEnJuego() {
+  const cont = $("#en-juego");
+  cont.innerHTML = "";
+  const proxId = STATE.proximo ? STATE.proximo.id : null;
+  const live = STATE.partidos.filter((p) => p.estado === "en_juego" && p.id !== proxId);
+  live.forEach((p) => {
+    const preds = predByPartido(p.id);
+    const mx = fmtKickoffMX(p.kickoff_utc);
+    const when = [mx ? `${mx.time} ${t("center_mx")}` : (p.hora_centro_mx || ""), p.sede]
+      .filter(Boolean).map(esc).join(" · ");
+    const score = (p.res_local != null && p.res_visitante != null)
+      ? `${p.res_local} – ${p.res_visitante}` : t("vs");
+    let rows = "";
+    STATE.participantes.forEach((nom) => {
+      const pr = preds[nom];
+      const marc = pr ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}` : "—";
+      rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td><td>${marc}</td></tr>`;
+    });
+    const card = el("div", "card");
+    card.innerHTML = `
+      <div class="match-head"><strong>${t("in_play_title")}</strong><span class="badge live">${t("st_live")}</span></div>
+      <div class="teams" style="margin:8px 0">
+        <div class="team"><div class="flag">${flag(p.local)}</div><div class="name">${esc(p.local)}</div></div>
+        <div class="vs">${score}</div>
+        <div class="team"><div class="flag">${flag(p.visitante)}</div><div class="name">${esc(p.visitante)}</div></div>
+      </div>
+      <div class="muted" style="margin-bottom:8px">${when}</div>
+      <table class="grid"><tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th></tr>${rows}</table>`;
+    cont.appendChild(card);
   });
 }
 
