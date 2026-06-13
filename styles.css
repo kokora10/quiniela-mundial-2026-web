@@ -397,3 +397,9 @@ body.dark .evo-legend { color: #ecd9e2; }
 .evo-phase { stroke: var(--guinda); stroke-width: 1; stroke-dasharray: 3 3; opacity: .45; }
 .evo-phaselab { font-size: 8.5px; fill: var(--guinda); font-weight: 700; text-anchor: start; opacity: .8; }
 body.dark .evo-phase, body.dark .evo-phaselab { stroke: #ff97b0; fill: #ff97b0; }
+
+/* ---- Evolución: proyección (por jugar), marcador "ahora" y nombres al final ---- */
+.evo-proj { stroke-width: 1.5; stroke-dasharray: 2 3; opacity: .5; fill: none; }
+.evo-now { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 2; opacity: .5; }
+.evo-endlab { font-size: 8.5px; font-weight: 700; text-anchor: start; }
+.evo-endlab-me { font-size: 9.5px; }

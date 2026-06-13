@@ -25,6 +25,7 @@ const I18N = {
     general_table: "Tabla general",
     evolution_title: "Evolución de puntos", evo_empty: "Aún no hay partidos puntuados.",
     evo_caption: "Puntos acumulados · eje X = partidos jugados (en orden)",
+    evo_progress: "{j}/{m} jugados",
     ph_group: "Grupos", ph_r32: "Dieciseisavos", ph_r16: "Octavos", ph_qf: "Cuartos", ph_sf: "Semis", ph_third: "3.er lugar", ph_final: "Final",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
@@ -81,6 +82,7 @@ const I18N = {
     general_table: "Standings",
     evolution_title: "Points over time", evo_empty: "No scored matches yet.",
     evo_caption: "Cumulative points · X axis = matches played (in order)",
+    evo_progress: "{j}/{m} played",
     ph_group: "Groups", ph_r32: "Round of 32", ph_r16: "Round of 16", ph_qf: "Quarters", ph_sf: "Semis", ph_third: "3rd place", ph_final: "Final",
     scoring_title: "Scoring", scoring_exact: "Exact score",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
@@ -137,6 +139,7 @@ const I18N = {
     general_table: "Турнирная таблица",
     evolution_title: "Динамика очков", evo_empty: "Пока нет сыгранных матчей.",
     evo_caption: "Накопленные очки · ось X = сыгранные матчи (по порядку)",
+    evo_progress: "{j}/{m} сыграно",
     ph_group: "Группы", ph_r32: "1/16", ph_r16: "1/8", ph_qf: "1/4", ph_sf: "1/2", ph_third: "За 3-е", ph_final: "Финал",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
@@ -193,6 +196,7 @@ const I18N = {
     general_table: "Gesamttabelle",
     evolution_title: "Punkteverlauf", evo_empty: "Noch keine gewerteten Spiele.",
     evo_caption: "Kumulierte Punkte · X-Achse = gespielte Spiele (der Reihe nach)",
+    evo_progress: "{j}/{m} gespielt",
     ph_group: "Gruppen", ph_r32: "Sechzehntel", ph_r16: "Achtel", ph_qf: "Viertel", ph_sf: "Halbfinale", ph_third: "Platz 3", ph_final: "Finale",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
@@ -757,9 +761,10 @@ function renderTablaFull() {
   });
 }
 
-// Colores distinguibles para hasta ~11 líneas (claro y oscuro).
-const CHART_COLORS = ["#b0234a", "#169c52", "#2f6fd6", "#e0a800", "#8a4fd6",
-  "#e0662a", "#0fa3a3", "#5a7d2a", "#c23b8f", "#3a6ea5", "#9a6b00"];
+// Colores bien distinguibles para hasta ~11 líneas (paleta categórica, legible en
+// claro y oscuro; sin amarillo claro que se perdía).
+const CHART_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+  "#8c564b", "#e377c2", "#17becf", "#bcbd22", "#7f7f7f", "#b0234a"];
 
 // Fase de un partido según su id (devuelve la clave i18n).
 function faseDe(id) {
@@ -784,22 +789,28 @@ function niceMax(max) {
 }
 
 // Gráfica de líneas: puntos acumulados de cada participante, partido a partido.
+// Eje X = partidos jugados (línea sólida) + por jugar (proyección punteada), para
+// ver cuánto falta. El nombre de cada quien va al final de su línea.
 function renderEvolucion() {
   const box = $("#evolucion");
   if (!box) return;
-  const fin = STATE.partidos
-    .filter((p) => p.estado === "finalizado" && p.res_local != null && p.res_visitante != null)
-    .filter((p) => STATE.pronosticos.some((pr) => pr.partido_id === p.id))
+  const isPh = (p) => isPlaceholder(p.local) || isPlaceholder(p.visitante);
+  const hasPred = (p) => STATE.pronosticos.some((pr) => pr.partido_id === p.id);
+  // Secuencia: finalizados con pronóstico (cuentan) + próximos reales (no placeholders).
+  const seq = STATE.partidos
+    .filter((p) => (p.estado === "finalizado" && p.res_local != null && p.res_visitante != null && hasPred(p))
+                || (p.estado !== "finalizado" && !isPh(p)))
     .sort((a, b) => ((a.kickoff_utc || "") < (b.kickoff_utc || "") ? -1 : 1));
-  if (!fin.length) {
+  const pj = seq.filter((p) => p.estado === "finalizado").length;  // partidos ya jugados
+  if (!pj) {
     box.innerHTML = `<p class="muted" style="text-align:center">${t("evo_empty")}</p>`;
     return;
   }
   const parts = STATE.participantes;
   const cum = {};
   parts.forEach((nom) => (cum[nom] = [0]));
-  fin.forEach((p) => {
-    const preds = predByPartido(p.id);
+  seq.forEach((p) => {
+    const preds = p.estado === "finalizado" ? predByPartido(p.id) : {};
     parts.forEach((nom) => {
       const pr = preds[nom];
       const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante) || 0) : 0;
@@ -807,11 +818,11 @@ function renderEvolucion() {
     });
   });
 
-  const N = fin.length;
-  const { step, top } = niceMax(Math.max(7, ...parts.map((nom) => cum[nom][N])));
-  const W = 360, H = 230, ml = 24, mr = 10, mt = 12, mb = 24;
+  const M = seq.length;                          // total de partidos en el eje
+  const { step, top } = niceMax(Math.max(7, ...parts.map((nom) => cum[nom][pj])));
+  const W = 380, H = 240, ml = 24, mr = 72, mt = 12, mb = 24;
   const pw = W - ml - mr, ph = H - mt - mb;
-  const X = (i) => ml + (i / N) * pw;
+  const X = (i) => ml + (i / M) * pw;
   const Y = (v) => mt + ph - (v / top) * ph;
 
   let grid = "";
@@ -820,15 +831,15 @@ function renderEvolucion() {
     grid += `<line x1="${ml}" y1="${y}" x2="${W - mr}" y2="${y}" class="evo-grid"/>`;
     grid += `<text x="${ml - 3}" y="${(Y(v) + 3).toFixed(1)}" class="evo-ylab">${v}</text>`;
   }
-  const xstep = Math.max(1, Math.ceil(N / 6));
+  const xstep = Math.max(1, Math.ceil(M / 6));
   let xlab = "";
-  for (let i = xstep; i <= N; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
+  for (let i = xstep; i <= M; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
 
   // Líneas verticales de cambio de fase, con el nombre rotado.
   let phases = "";
   let prevFase = null;
-  for (let k = 1; k <= N; k++) {
-    const f = faseDe(fin[k - 1].id);
+  for (let k = 1; k <= M; k++) {
+    const f = faseDe(seq[k - 1].id);
     if (f !== prevFase) {
       const xb = X(k - 1);
       if (k > 1) phases += `<line x1="${xb.toFixed(1)}" y1="${mt}" x2="${xb.toFixed(1)}" y2="${(mt + ph).toFixed(1)}" class="evo-phase"/>`;
@@ -836,30 +847,43 @@ function renderEvolucion() {
       prevFase = f;
     }
   }
+  // marcador vertical "ahora" (fin de lo jugado) si quedan partidos
+  let nowLine = "";
+  if (pj < M) nowLine = `<line x1="${X(pj).toFixed(1)}" y1="${mt}" x2="${X(pj).toFixed(1)}" y2="${(mt + ph).toFixed(1)}" class="evo-now"/>`;
 
   let lines = "";
   parts.forEach((nom, idx) => {
     const color = CHART_COLORS[idx % CHART_COLORS.length];
-    const pts = cum[nom].map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
-    lines += `<polyline points="${pts}" fill="none" stroke="${color}" class="evo-line ${nom === me ? "evo-me" : ""}"/>`;
-    lines += `<circle cx="${X(N).toFixed(1)}" cy="${Y(cum[nom][N]).toFixed(1)}" r="${nom === me ? 3.5 : 2.4}" fill="${color}"/>`;
+    const solid = cum[nom].slice(0, pj + 1).map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+    lines += `<polyline points="${solid}" fill="none" stroke="${color}" class="evo-line ${nom === me ? "evo-me" : ""}"/>`;
+    if (pj < M) lines += `<line x1="${X(pj).toFixed(1)}" y1="${Y(cum[nom][pj]).toFixed(1)}" x2="${X(M).toFixed(1)}" y2="${Y(cum[nom][pj]).toFixed(1)}" stroke="${color}" class="evo-proj"/>`;
+    lines += `<circle cx="${X(pj).toFixed(1)}" cy="${Y(cum[nom][pj]).toFixed(1)}" r="${nom === me ? 3.5 : 2.4}" fill="${color}"/>`;
   });
+
+  // Etiquetas de nombre al final de cada línea (borde derecho), separadas para no encimarse.
+  const lab = parts.map((nom, idx) => ({
+    nom, color: CHART_COLORS[idx % CHART_COLORS.length], total: cum[nom][pj], y: Y(cum[nom][pj]),
+  })).sort((a, b) => a.y - b.y);
+  const gap = 11, loLim = mt + 4, hiLim = H - 4;
+  for (let i = 1; i < lab.length; i++) if (lab[i].y - lab[i - 1].y < gap) lab[i].y = lab[i - 1].y + gap;
+  if (lab[lab.length - 1].y > hiLim) {            // si topan abajo, apila hacia arriba
+    lab[lab.length - 1].y = hiLim;
+    for (let i = lab.length - 2; i >= 0; i--) if (lab[i].y > lab[i + 1].y - gap) lab[i].y = lab[i + 1].y - gap;
+  }
+  if (lab[0].y < loLim) lab[0].y = loLim;
+  const endlabs = lab.map((L) =>
+    `<text x="${(X(M) + 5).toFixed(1)}" y="${(L.y + 3).toFixed(1)}" fill="${L.color}" class="evo-endlab ${L.nom === me ? "evo-endlab-me" : ""}">${esc(L.nom)} ${L.total}</text>`
+  ).join("");
 
   const svg = `<svg viewBox="0 0 ${W} ${H}" class="evo-svg" preserveAspectRatio="xMidYMid meet" role="img">
     ${grid}
     <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt + ph}" class="evo-axis"/>
     <line x1="${ml}" y1="${mt + ph}" x2="${W - mr}" y2="${mt + ph}" class="evo-axis"/>
-    ${phases}${lines}${xlab}
+    ${phases}${nowLine}${lines}${endlabs}${xlab}
   </svg>`;
 
-  const order = parts.slice().sort((a, b) => cum[b][N] - cum[a][N]);
-  const legend = order.map((nom) => {
-    const color = CHART_COLORS[parts.indexOf(nom) % CHART_COLORS.length];
-    return `<span class="evo-leg ${nom === me ? "evo-leg-me" : ""}"><i style="background:${color}"></i>${esc(nom)} ${cum[nom][N]}</span>`;
-  }).join("");
-
-  box.innerHTML = svg + `<div class="evo-legend">${legend}</div>`
-    + `<div class="muted evo-cap">${t("evo_caption")}</div>`;
+  const jugadosTxt = t("evo_progress", { j: pj, m: M });
+  box.innerHTML = svg + `<div class="muted evo-cap">${esc(jugadosTxt)} · ${t("evo_caption")}</div>`;
 }
 
 function puntos(pl, pv, rl, rv) {
