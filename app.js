@@ -23,6 +23,8 @@ const I18N = {
     no_upcoming: "No hay próximos partidos.",
     leaderboard: "Clasificación", preds_this_match: "Pronósticos de este partido",
     general_table: "Tabla general",
+    evolution_title: "Evolución de puntos", evo_empty: "Aún no hay partidos puntuados.",
+    evo_caption: "Puntos acumulados · eje X = partidos jugados (en orden)",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
     admin: "Admin",
@@ -76,6 +78,8 @@ const I18N = {
     no_upcoming: "No upcoming matches.",
     leaderboard: "Leaderboard", preds_this_match: "Predictions for this match",
     general_table: "Standings",
+    evolution_title: "Points over time", evo_empty: "No scored matches yet.",
+    evo_caption: "Cumulative points · X axis = matches played (in order)",
     scoring_title: "Scoring", scoring_exact: "Exact score",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
     admin: "Admin",
@@ -129,6 +133,8 @@ const I18N = {
     no_upcoming: "Нет ближайших матчей.",
     leaderboard: "Таблица лидеров", preds_this_match: "Прогнозы на этот матч",
     general_table: "Турнирная таблица",
+    evolution_title: "Динамика очков", evo_empty: "Пока нет сыгранных матчей.",
+    evo_caption: "Накопленные очки · ось X = сыгранные матчи (по порядку)",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
     admin: "Админ",
@@ -182,6 +188,8 @@ const I18N = {
     no_upcoming: "Keine kommenden Spiele.",
     leaderboard: "Rangliste", preds_this_match: "Tipps für dieses Spiel",
     general_table: "Gesamttabelle",
+    evolution_title: "Punkteverlauf", evo_empty: "Noch keine gewerteten Spiele.",
+    evo_caption: "Kumulierte Punkte · X-Achse = gespielte Spiele (der Reihe nach)",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
     admin: "Admin",
@@ -455,6 +463,7 @@ function render() {
   renderGridProximo();
   renderProximos();
   renderTablaFull();
+  renderEvolucion();
   renderResultados();
   renderAdminSelects();
 }
@@ -742,6 +751,84 @@ function renderTablaFull() {
       <td class="pts">${r.puntos}</td><td>${r.exactos}</td><td>${r.resultados}</td><td>${r.jugados}</td>`;
     tb.appendChild(tr);
   });
+}
+
+// Colores distinguibles para hasta ~11 líneas (claro y oscuro).
+const CHART_COLORS = ["#b0234a", "#169c52", "#2f6fd6", "#e0a800", "#8a4fd6",
+  "#e0662a", "#0fa3a3", "#5a7d2a", "#c23b8f", "#3a6ea5", "#9a6b00"];
+
+function niceMax(max) {
+  const raw = Math.max(1, max) / 4;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / mag;
+  const step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+  return { step, top: Math.ceil(Math.max(1, max) / step) * step };
+}
+
+// Gráfica de líneas: puntos acumulados de cada participante, partido a partido.
+function renderEvolucion() {
+  const box = $("#evolucion");
+  if (!box) return;
+  const fin = STATE.partidos
+    .filter((p) => p.estado === "finalizado" && p.res_local != null && p.res_visitante != null)
+    .filter((p) => STATE.pronosticos.some((pr) => pr.partido_id === p.id))
+    .sort((a, b) => ((a.kickoff_utc || "") < (b.kickoff_utc || "") ? -1 : 1));
+  if (!fin.length) {
+    box.innerHTML = `<p class="muted" style="text-align:center">${t("evo_empty")}</p>`;
+    return;
+  }
+  const parts = STATE.participantes;
+  const cum = {};
+  parts.forEach((nom) => (cum[nom] = [0]));
+  fin.forEach((p) => {
+    const preds = predByPartido(p.id);
+    parts.forEach((nom) => {
+      const pr = preds[nom];
+      const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante) || 0) : 0;
+      cum[nom].push(cum[nom][cum[nom].length - 1] + pts);
+    });
+  });
+
+  const N = fin.length;
+  const { step, top } = niceMax(Math.max(7, ...parts.map((nom) => cum[nom][N])));
+  const W = 360, H = 230, ml = 24, mr = 10, mt = 12, mb = 24;
+  const pw = W - ml - mr, ph = H - mt - mb;
+  const X = (i) => ml + (i / N) * pw;
+  const Y = (v) => mt + ph - (v / top) * ph;
+
+  let grid = "";
+  for (let v = 0; v <= top; v += step) {
+    const y = Y(v).toFixed(1);
+    grid += `<line x1="${ml}" y1="${y}" x2="${W - mr}" y2="${y}" class="evo-grid"/>`;
+    grid += `<text x="${ml - 3}" y="${(Y(v) + 3).toFixed(1)}" class="evo-ylab">${v}</text>`;
+  }
+  const xstep = Math.max(1, Math.ceil(N / 6));
+  let xlab = "";
+  for (let i = xstep; i <= N; i += xstep) xlab += `<text x="${X(i).toFixed(1)}" y="${H - 7}" class="evo-xlab">${i}</text>`;
+
+  let lines = "";
+  parts.forEach((nom, idx) => {
+    const color = CHART_COLORS[idx % CHART_COLORS.length];
+    const pts = cum[nom].map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+    lines += `<polyline points="${pts}" fill="none" stroke="${color}" class="evo-line ${nom === me ? "evo-me" : ""}"/>`;
+    lines += `<circle cx="${X(N).toFixed(1)}" cy="${Y(cum[nom][N]).toFixed(1)}" r="${nom === me ? 3.5 : 2.4}" fill="${color}"/>`;
+  });
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" class="evo-svg" preserveAspectRatio="xMidYMid meet" role="img">
+    ${grid}
+    <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt + ph}" class="evo-axis"/>
+    <line x1="${ml}" y1="${mt + ph}" x2="${W - mr}" y2="${mt + ph}" class="evo-axis"/>
+    ${lines}${xlab}
+  </svg>`;
+
+  const order = parts.slice().sort((a, b) => cum[b][N] - cum[a][N]);
+  const legend = order.map((nom) => {
+    const color = CHART_COLORS[parts.indexOf(nom) % CHART_COLORS.length];
+    return `<span class="evo-leg ${nom === me ? "evo-leg-me" : ""}"><i style="background:${color}"></i>${esc(nom)} ${cum[nom][N]}</span>`;
+  }).join("");
+
+  box.innerHTML = svg + `<div class="evo-legend">${legend}</div>`
+    + `<div class="muted evo-cap">${t("evo_caption")}</div>`;
 }
 
 function puntos(pl, pv, rl, rv) {

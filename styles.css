@@ -377,3 +377,18 @@ body.dark .pm-legend { color: #ecd9e2; }
 .badge.live::before { animation: livePulse 1.2s ease-in-out infinite; }
 @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 body.dark .badge.live { background: #3a3016; color: #f2cd7a; }
+
+/* ---- Gráfica de evolución de puntos (SVG) ---- */
+.evo-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.evo-grid { stroke: var(--line); stroke-width: 1; }
+.evo-axis { stroke: var(--line); stroke-width: 1.2; }
+.evo-line { stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; opacity: .9; }
+.evo-line.evo-me { stroke-width: 3.5; opacity: 1; }
+.evo-ylab { font-size: 9px; fill: var(--muted); text-anchor: end; }
+.evo-xlab { font-size: 9px; fill: var(--muted); text-anchor: middle; }
+.evo-legend { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 10px; font-size: .76rem; color: var(--ink); }
+.evo-leg { display: inline-flex; align-items: center; gap: 5px; }
+.evo-leg i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: none; }
+.evo-leg-me { font-weight: 800; color: var(--guinda); }
+.evo-cap { font-size: .72rem; margin-top: 8px; }
+body.dark .evo-legend { color: #ecd9e2; }
