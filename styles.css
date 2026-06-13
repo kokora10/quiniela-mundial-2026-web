@@ -73,6 +73,19 @@
 .whoami .langb.active { background: #fff; color: var(--guinda); border-color: #fff; }
 .whoami .themeb { border-color: rgba(255,255,255,.4); }
 
+/* Puntuación */
+.scoring-list { list-style: none; margin: 0; padding: 0; }
+.scoring-list li {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: .9rem;
+}
+.scoring-list li:last-child { border-bottom: none; }
+.scoring-list b.pts {
+  min-width: 30px; text-align: center; padding: 2px 8px; border-radius: 8px;
+  background: #fff2f5; color: var(--guinda);
+}
+body.dark .scoring-list b.pts { background: #3a2230; color: #ff97b0; }
+
 /* ===== Modo oscuro ===== */
 body.dark {
   --bg: #14151a; --card: #1f2128; --line: #30333c; --gris: #a9adb6;
