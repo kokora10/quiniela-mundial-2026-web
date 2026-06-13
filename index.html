@@ -11,13 +11,14 @@
   <!-- ===== LOGIN ===== -->
   <section id="login-screen" class="screen">
     <div class="auth-card">
-      <div class="lang-row">
-        <select class="lang-select" aria-label="Idioma / Language">
-          <option value="es">Español</option>
-          <option value="en">English</option>
-          <option value="ru">Русский</option>
-          <option value="de">Deutsch</option>
-        </select>
+      <div class="ctrl-row">
+        <div class="lang-btns">
+          <button class="langb" data-lang="es">ES</button>
+          <button class="langb" data-lang="en">EN</button>
+          <button class="langb" data-lang="ru">RU</button>
+          <button class="langb" data-lang="de">DE</button>
+        </div>
+        <button class="themeb" aria-label="Tema claro/oscuro">🌙</button>
       </div>
       <h1 id="login-title">Quiniela del Grupo 2026</h1>
       <p class="muted" data-i18n="app_subtitle_login">Acceso solo para participantes del grupo.</p>
@@ -66,12 +67,13 @@
       <h1 id="site-name">Quiniela del Grupo 2026</h1>
       <div class="whoami">
         <span id="hola"></span>
-        <select class="lang-select" aria-label="Idioma / Language">
-          <option value="es">ES</option>
-          <option value="en">EN</option>
-          <option value="ru">RU</option>
-          <option value="de">DE</option>
-        </select>
+        <div class="lang-btns">
+          <button class="langb" data-lang="es">ES</button>
+          <button class="langb" data-lang="en">EN</button>
+          <button class="langb" data-lang="ru">RU</button>
+          <button class="langb" data-lang="de">DE</button>
+        </div>
+        <button class="themeb" aria-label="Tema claro/oscuro">🌙</button>
         <button id="btn-cambiar" class="link" data-i18n="btn_change_pin">Cambiar PIN</button>
         <button id="btn-salir" class="link" data-i18n="btn_logout">Salir</button>
       </div>

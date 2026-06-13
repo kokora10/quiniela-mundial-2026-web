@@ -55,12 +55,44 @@
 }
 .whoami #hola { flex: 1; font-weight: 700; }
 
-.lang-row { display: flex; justify-content: flex-end; margin-bottom: 6px; }
-.lang-select {
-  padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
-  font-size: .8rem; background: #fff; color: #1d1d20; cursor: pointer;
+/* Controles: idioma (botones) + tema */
+.ctrl-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
+.lang-btns { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.langb {
+  background: transparent; color: var(--gris); border: 1px solid var(--line);
+  padding: 4px 8px; border-radius: 8px; font-size: .72rem; font-weight: 700; cursor: pointer;
 }
-.whoami .lang-select { padding: 4px 6px; border: none; }
+.langb.active { background: var(--guinda); color: #fff; border-color: var(--guinda); }
+.themeb {
+  background: transparent; border: 1px solid var(--line); border-radius: 8px;
+  padding: 3px 7px; font-size: .95rem; line-height: 1; cursor: pointer;
+}
+/* En la cabecera (fondo guinda) los controles van claros */
+.whoami { flex-wrap: wrap; }
+.whoami .langb { color: #ffd9e2; border-color: rgba(255,255,255,.4); }
+.whoami .langb.active { background: #fff; color: var(--guinda); border-color: #fff; }
+.whoami .themeb { border-color: rgba(255,255,255,.4); }
+
+/* ===== Modo oscuro ===== */
+body.dark {
+  --bg: #14151a; --card: #1f2128; --line: #30333c; --gris: #a9adb6;
+  color: #e8e8ea;
+}
+body.dark .card h2 { color: #ff6f93; }
+body.dark .auth-card h1, body.dark .pts { color: #ff6f93; }
+body.dark .muted { color: #9aa0ab; }
+body.dark .instrucciones { background: #2a2030; border-color: #4a3350; color: #ecd9e2; }
+body.dark .field select, body.dark .field input,
+body.dark .row select, body.dark .score,
+body.dark #admin-pin {
+  background: #14151a; color: #e8e8ea; border-color: var(--line);
+}
+body.dark .lb tr.me td { background: #3a2230; }
+body.dark .badge.open { background: #163a24; color: #7ee0a1; }
+body.dark .badge.closed { background: #3a1c26; color: #ff97b0; }
+body.dark .tag.exact { background: #163a24; color: #7ee0a1; }
+body.dark .tag.res { background: #3a3016; color: #f2cd7a; }
+body.dark .langb { border-color: var(--line); }
 
 body {
   margin: 0;

@@ -210,8 +210,25 @@ function applyStaticI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach((e) => { e.textContent = t(e.dataset.i18n); });
   document.querySelectorAll("[data-i18n-ph]").forEach((e) => { e.placeholder = t(e.dataset.i18nPh); });
-  document.querySelectorAll(".lang-select").forEach((s) => { s.value = lang; });
+  document.querySelectorAll(".langb").forEach((b) => {
+    b.classList.toggle("active", b.dataset.lang === lang);
+  });
   if (me) $("#hola").textContent = t("hello", { name: me });
+}
+
+// ====================== Tema claro / oscuro ======================
+let theme = localStorage.getItem("q_theme");
+if (theme !== "dark" && theme !== "light") {
+  theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+}
+function applyTheme() {
+  document.body.classList.toggle("dark", theme === "dark");
+  document.querySelectorAll(".themeb").forEach((b) => { b.textContent = theme === "dark" ? "☀️" : "🌙"; });
+}
+function toggleTheme() {
+  theme = theme === "dark" ? "light" : "dark";
+  localStorage.setItem("q_theme", theme);
+  applyTheme();
 }
 
 function setLang(l) {
@@ -336,8 +353,11 @@ async function fillNombres() {
   } catch (e) { /* reintenta al interactuar */ }
 }
 
-document.querySelectorAll(".lang-select").forEach((s) => {
-  s.addEventListener("change", (e) => setLang(e.target.value));
+document.querySelectorAll(".langb").forEach((b) => {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+});
+document.querySelectorAll(".themeb").forEach((b) => {
+  b.addEventListener("click", toggleTheme);
 });
 
 $("#login-btn").addEventListener("click", async () => {
@@ -595,6 +615,7 @@ $("#sync-btn").addEventListener("click", async () => {
 
 // ============ Arranque ============
 (async function boot() {
+  applyTheme();
   applyStaticI18n();
   await fillNombres();
   if (me && sessionPin) {
