@@ -19,6 +19,7 @@ const I18N = {
     btn_change_pin: "Cambiar PIN", btn_logout: "Salir", hello: "Hola, {name}",
     tab_home: "Inicio", tab_results: "Resultados y tabla", tab_admin: "Admin",
     tab_upcoming: "Próximos partidos",
+    nav_home: "Inicio", nav_upcoming: "Próximos", nav_results: "Resultados", nav_admin: "Admin",
     upcoming_note: "Puedes registrar tu pronóstico de cualquier partido por adelantado.",
     no_upcoming: "No hay próximos partidos.",
     leaderboard: "Clasificación", preds_this_match: "Pronósticos de este partido",
@@ -77,6 +78,7 @@ const I18N = {
     btn_change_pin: "Change PIN", btn_logout: "Sign out", hello: "Hi, {name}",
     tab_home: "Home", tab_results: "Results & table", tab_admin: "Admin",
     tab_upcoming: "Upcoming matches",
+    nav_home: "Home", nav_upcoming: "Upcoming", nav_results: "Results", nav_admin: "Admin",
     upcoming_note: "You can submit your prediction for any match in advance.",
     no_upcoming: "No upcoming matches.",
     leaderboard: "Leaderboard", preds_this_match: "Predictions for this match",
@@ -135,6 +137,7 @@ const I18N = {
     btn_change_pin: "Сменить PIN", btn_logout: "Выйти", hello: "Привет, {name}",
     tab_home: "Главная", tab_results: "Результаты и таблица", tab_admin: "Админ",
     tab_upcoming: "Ближайшие матчи",
+    nav_home: "Главная", nav_upcoming: "Матчи", nav_results: "Итоги", nav_admin: "Админ",
     upcoming_note: "Вы можете заранее сделать прогноз на любой матч.",
     no_upcoming: "Нет ближайших матчей.",
     leaderboard: "Таблица лидеров", preds_this_match: "Прогнозы на этот матч",
@@ -193,6 +196,7 @@ const I18N = {
     btn_change_pin: "PIN ändern", btn_logout: "Abmelden", hello: "Hallo, {name}",
     tab_home: "Start", tab_results: "Ergebnisse & Tabelle", tab_admin: "Admin",
     tab_upcoming: "Kommende Spiele",
+    nav_home: "Start", nav_upcoming: "Spiele", nav_results: "Tabelle", nav_admin: "Admin",
     upcoming_note: "Du kannst deinen Tipp für jedes Spiel im Voraus abgeben.",
     no_upcoming: "Keine kommenden Spiele.",
     leaderboard: "Rangliste", preds_this_match: "Tipps für dieses Spiel",
@@ -276,18 +280,24 @@ function applyStaticI18n() {
   if (me) $("#hola").textContent = t("hello", { name: me });
 }
 
-// ====================== Tema claro / oscuro ======================
+// ====================== Tema (Neón · Day · Black) ======================
+const THEMES = ["neon", "day", "black"];
 let theme = localStorage.getItem("q_theme");
-if (theme !== "dark" && theme !== "light") {
-  theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+if (!THEMES.includes(theme)) {
+  // Migra el toggle viejo claro/oscuro y elige un default sensato.
+  const old = theme;
+  theme = old === "light" ? "day" : "neon";
 }
 function applyTheme() {
-  document.body.classList.toggle("dark", theme === "dark");
-  document.querySelectorAll(".themeb").forEach((b) => { b.textContent = theme === "dark" ? "☀️" : "🌙"; });
+  document.body.setAttribute("data-theme", theme);
+  document.querySelectorAll(".themeb").forEach((b) => {
+    b.classList.toggle("active", b.dataset.theme === theme);
+  });
 }
-function toggleTheme() {
-  theme = theme === "dark" ? "light" : "dark";
-  localStorage.setItem("q_theme", theme);
+function setTheme(name) {
+  if (!THEMES.includes(name)) return;
+  theme = name;
+  localStorage.setItem("q_theme", name);
   applyTheme();
 }
 
@@ -419,7 +429,7 @@ document.querySelectorAll(".langb").forEach((b) => {
   b.addEventListener("click", () => setLang(b.dataset.lang));
 });
 document.querySelectorAll(".themeb").forEach((b) => {
-  b.addEventListener("click", toggleTheme);
+  b.addEventListener("click", () => setTheme(b.dataset.theme));
 });
 
 $("#login-btn").addEventListener("click", async () => {
@@ -450,13 +460,14 @@ $("#change-cancel").addEventListener("click", () => showApp());
 $("#btn-cambiar").addEventListener("click", () => showChange(false));
 $("#btn-salir").addEventListener("click", () => { clearSession(); showLogin(); });
 
-// ---- Tabs ----
-document.querySelectorAll(".tab").forEach((btn) => {
+// ---- Navegación inferior (tab bar) ----
+document.querySelectorAll(".navb").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".navb").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
     btn.classList.add("active");
     $("#view-" + btn.dataset.view).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
 
