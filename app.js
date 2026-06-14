@@ -282,12 +282,9 @@ function applyStaticI18n() {
 
 // ====================== Tema (Neón · Day · Black) ======================
 const THEMES = ["neon", "day", "black"];
-let theme = localStorage.getItem("q_theme");
-if (!THEMES.includes(theme)) {
-  // Migra el toggle viejo claro/oscuro y elige un default sensato.
-  const old = theme;
-  theme = old === "light" ? "day" : "neon";
-}
+// Siempre arranca en Neón, aunque el usuario haya elegido otro tema antes.
+// El switcher sigue funcionando dentro de la sesión; al recargar vuelve a Neón.
+let theme = "neon";
 function applyTheme() {
   document.body.setAttribute("data-theme", theme);
   document.querySelectorAll(".themeb").forEach((b) => {
