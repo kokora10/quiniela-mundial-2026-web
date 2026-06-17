@@ -475,3 +475,8 @@ table { width: 100%; border-collapse: collapse; }
 .evo-bar { height: 7px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .evo-bar span { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s ease; }
 .evo-progress .evo-cap { margin-top: 6px; }
+
+/* ---- Pronóstico oculto antes del cierre ---- */
+.pred-ready { display: inline-block; padding: 2px 9px; border-radius: 999px;
+  background: var(--badgebg); color: var(--badgefg); font-weight: 800; font-size: .78rem; }
+.pred-note { font-size: .72rem; text-align: center; padding-top: 8px; }

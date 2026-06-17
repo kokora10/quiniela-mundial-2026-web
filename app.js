@@ -23,6 +23,7 @@ const I18N = {
     upcoming_note: "Puedes registrar tu pronóstico de cualquier partido por adelantado.",
     no_upcoming: "No hay próximos partidos.",
     leaderboard: "Clasificación", preds_this_match: "Pronósticos de este partido",
+    pred_ready: "✓ listo", pred_hidden_note: "Los pronósticos de los demás se revelan al cierre (1 min antes del inicio).",
     general_table: "Tabla general",
     evolution_title: "Evolución de puntos", evo_empty: "Aún no hay partidos puntuados.",
     evo_caption: "Puntos acumulados · eje X = partidos jugados (en orden)",
@@ -82,6 +83,7 @@ const I18N = {
     upcoming_note: "You can submit your prediction for any match in advance.",
     no_upcoming: "No upcoming matches.",
     leaderboard: "Leaderboard", preds_this_match: "Predictions for this match",
+    pred_ready: "✓ in", pred_hidden_note: "Others' predictions are revealed at lock (1 min before kickoff).",
     general_table: "Standings",
     evolution_title: "Points over time", evo_empty: "No scored matches yet.",
     evo_caption: "Cumulative points · X axis = matches played (in order)",
@@ -141,6 +143,7 @@ const I18N = {
     upcoming_note: "Вы можете заранее сделать прогноз на любой матч.",
     no_upcoming: "Нет ближайших матчей.",
     leaderboard: "Таблица лидеров", preds_this_match: "Прогнозы на этот матч",
+    pred_ready: "✓ готов", pred_hidden_note: "Чужие прогнозы открываются при закрытии (за 1 мин до начала).",
     general_table: "Турнирная таблица",
     evolution_title: "Динамика очков", evo_empty: "Пока нет сыгранных матчей.",
     evo_caption: "Накопленные очки · ось X = сыгранные матчи (по порядку)",
@@ -200,6 +203,7 @@ const I18N = {
     upcoming_note: "Du kannst deinen Tipp für jedes Spiel im Voraus abgeben.",
     no_upcoming: "Keine kommenden Spiele.",
     leaderboard: "Rangliste", preds_this_match: "Tipps für dieses Spiel",
+    pred_ready: "✓ ok", pred_hidden_note: "Fremde Tipps werden beim Schließen sichtbar (1 Min vor Anpfiff).",
     general_table: "Gesamttabelle",
     evolution_title: "Punkteverlauf", evo_empty: "Noch keine gewerteten Spiele.",
     evo_caption: "Kumulierte Punkte · X-Achse = gespielte Spiele (der Reihe nach)",
@@ -675,14 +679,25 @@ function renderGridProximo() {
   const p = STATE.proximo;
   if (!p) { tb.innerHTML = ""; return; }
   const preds = predByPartido(p.id);
+  // Antes del cierre (partido aún abierto): cada quien ve solo SU marcador; de los
+  // demás solo "✓ listo". Al cerrar/empezar se revelan todos.
+  const oculto = !!p.abierto;
   tb.innerHTML = `<tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th></tr>`;
   STATE.participantes.forEach((nom) => {
     const pr = preds[nom];
-    const marc = pr ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}` : "—";
+    let marc;
+    if (!pr) marc = "—";
+    else if (oculto && nom !== me) marc = `<span class="pred-ready">${t("pred_ready")}</span>`;
+    else marc = `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}`;
     const tr = el("tr", nom === me ? "me" : "");
     tr.innerHTML = `<td>${esc(nom)}</td><td>${marc}</td>`;
     tb.appendChild(tr);
   });
+  if (oculto) {
+    const note = el("tr", "");
+    note.innerHTML = `<td colspan="2" class="muted pred-note">${t("pred_hidden_note")}</td>`;
+    tb.appendChild(note);
+  }
 }
 
 // ---- Próximos partidos (calendario, solo equipos definidos, agrupado por fecha) ----
