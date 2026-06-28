@@ -618,3 +618,31 @@ table { width: 100%; border-collapse: collapse; }
   box-shadow: 0 0 10px var(--accent2); pointer-events: none;
   animation: newPulse 1.9s ease-in-out infinite;
 }
+
+/* ===================== Eliminatorias: ¿quién avanza? + en revisión ===================== */
+.avanza-pick {
+  margin-top: 10px; padding: 10px 12px; border: 1px dashed var(--pborder);
+  border-radius: var(--radius-sm); background: var(--accentsoft);
+}
+.avanza-q { font-size: .8rem; font-weight: 700; color: var(--accent); margin-bottom: 7px; text-align: center; }
+.avanza-btns { display: flex; gap: 8px; }
+.avz-btn {
+  flex: 1; padding: 9px 8px; border-radius: 10px; cursor: pointer;
+  background: var(--fieldbg); color: var(--ink); border: 1.5px solid var(--fieldborder);
+  font-weight: 700; font-size: .85rem; box-shadow: none; transition: border-color .15s, background .15s;
+}
+.avz-btn:hover { border-color: var(--accent); }
+.avz-btn.active { background: var(--grad); color: var(--btnfg); border-color: transparent; box-shadow: var(--accentglow); }
+.avz-tag { font-size: .76rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+#revision-banner {
+  margin: 0 0 14px; padding: 11px 14px; border-radius: var(--radius-sm);
+  background: var(--warnbg); color: var(--warnfg); border: 1px solid var(--warnfg);
+  font-size: .84rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  animation: revBlink 1.1s ease-in-out infinite;
+}
+@keyframes revBlink { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+#revision-banner .rev-ico { font-size: 1rem; }
+#revision-banner .rev-list { color: var(--ink); font-weight: 600; }
+.badge.rev { background: var(--warnbg); color: var(--warnfg); animation: revBlink 1.1s ease-in-out infinite; }
+.card-rev { border-color: var(--warnfg); }
+.rev-note { font-size: .8rem; color: var(--warnfg); margin-bottom: 8px; font-weight: 600; }

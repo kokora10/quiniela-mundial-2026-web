@@ -7,11 +7,11 @@
   <title>Quiniela del Grupo 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="styles.css?v=24" />
+  <link rel="stylesheet" href="styles.css?v=25" />
   <!-- PWA: permite "Agregar a pantalla de inicio" como acceso directo -->
-  <link rel="manifest" href="manifest.webmanifest?v=24" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=24" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=24" />
+  <link rel="manifest" href="manifest.webmanifest?v=25" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=25" />
+  <link rel="icon" type="image/png" href="icon-192.png?v=25" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -104,6 +104,9 @@
     </header>
 
     <main>
+      <!-- Banner parpadeante: resultados de eliminatoria sin verificar (penales) -->
+      <div id="revision-banner" class="hidden"></div>
+
       <!-- ===== INICIO ===== -->
       <section id="view-inicio" class="view active">
         <div id="en-juego"></div>
@@ -200,6 +203,10 @@
             <input type="number" min="0" max="20" id="ar-visitante" class="score" />
             <button id="ar-save" data-i18n="save">Guardar</button>
           </div>
+          <div class="row hidden" id="ar-avanza-row">
+            <label data-i18n="who_advances_pen">¿Quién avanzó (penales)?</label>
+            <select id="ar-avanza"></select>
+          </div>
 
           <h3 data-i18n="enter_pred_for">Meter pronóstico de alguien (lo mandó por chat)</h3>
           <div class="row">
@@ -209,6 +216,10 @@
             <span>–</span>
             <input type="number" min="0" max="20" id="ap-visitante" class="score" />
             <button id="ap-save" data-i18n="save">Guardar</button>
+          </div>
+          <div class="row hidden" id="ap-avanza-row">
+            <label data-i18n="who_advances">¿Quién avanza?</label>
+            <select id="ap-avanza"></select>
           </div>
 
           <h3 data-i18n="admin_pin_title">Cambiar PIN de un participante</h3>
@@ -261,6 +272,6 @@
     </nav>
   </div>
 
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>

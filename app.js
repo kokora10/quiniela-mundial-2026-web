@@ -42,6 +42,13 @@ const I18N = {
     sc_exact_w: "exacto", sc_result_w: "resultado",
     sc_note: "El cambio de puntos aplica solo a las nuevas etapas; lo ya jugado en la fase de grupos conserva su puntuación.",
     seg_total: "Total", seg_stage: "Esta etapa", badge_new: "NUEVO",
+    who_advances: "¿Quién avanza?", who_advances_pen: "¿Quién avanzó (penales)?",
+    pick_advances: "Elige quién avanza (empate en eliminatoria)",
+    pens_short: "por penales", opt_pick: "— elige —",
+    banner_review: "Resultado(s) en revisión: falta confirmar el ganador de penales. Aún no cuentan para puntos.",
+    st_review: "En revisión",
+    review_note: "Resultado sin verificar (falta confirmar el ganador de penales). No cuenta para puntos todavía.",
+    saved_review: "Guardado · queda EN REVISIÓN (falta el ganador de penales)",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto (5 + 2 de resultado)",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
     admin: "Admin",
@@ -114,6 +121,13 @@ const I18N = {
     sc_exact_w: "exact", sc_result_w: "result",
     sc_note: "The points change applies only to the new stages; what was already played in the group stage keeps its scoring.",
     seg_total: "Total", seg_stage: "This stage", badge_new: "NEW",
+    who_advances: "Who advances?", who_advances_pen: "Who advanced (pens)?",
+    pick_advances: "Pick who advances (knockout draw)",
+    pens_short: "on penalties", opt_pick: "— pick —",
+    banner_review: "Result(s) under review: penalty winner not confirmed yet. They don't count for points yet.",
+    st_review: "Under review",
+    review_note: "Unverified result (penalty winner pending). It doesn't count for points yet.",
+    saved_review: "Saved · UNDER REVIEW (penalty winner missing)",
     scoring_title: "Scoring", scoring_exact: "Exact score (5 + 2 result)",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
     admin: "Admin",
@@ -186,6 +200,13 @@ const I18N = {
     sc_exact_w: "точный", sc_result_w: "исход",
     sc_note: "Изменение очков касается только новых стадий; уже сыгранный групповой этап сохраняет свою систему.",
     seg_total: "Итого", seg_stage: "Эта стадия", badge_new: "НОВОЕ",
+    who_advances: "Кто проходит?", who_advances_pen: "Кто прошёл (пенальти)?",
+    pick_advances: "Выбери, кто проходит (ничья в плей-офф)",
+    pens_short: "по пенальти", opt_pick: "— выбрать —",
+    banner_review: "Результат(ы) на проверке: победитель серии пенальти не подтверждён. Пока не засчитываются.",
+    st_review: "На проверке",
+    review_note: "Результат не подтверждён (нужен победитель пенальти). Пока не идёт в зачёт.",
+    saved_review: "Сохранено · НА ПРОВЕРКЕ (нет победителя пенальти)",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт (5 + 2 за исход)",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
     admin: "Админ",
@@ -258,6 +279,13 @@ const I18N = {
     sc_exact_w: "exakt", sc_result_w: "Ergebnis",
     sc_note: "Die Punkteänderung gilt nur für die neuen Phasen; die bereits gespielte Gruppenphase behält ihre Wertung.",
     seg_total: "Gesamt", seg_stage: "Diese Phase", badge_new: "NEU",
+    who_advances: "Wer kommt weiter?", who_advances_pen: "Wer kam weiter (Elfmeter)?",
+    pick_advances: "Wähle, wer weiterkommt (K.-o.-Unentschieden)",
+    pens_short: "im Elfmeterschießen", opt_pick: "— wählen —",
+    banner_review: "Ergebnis(se) in Prüfung: Elfmeter-Sieger noch nicht bestätigt. Zählen noch nicht.",
+    st_review: "In Prüfung",
+    review_note: "Unbestätigtes Ergebnis (Elfmeter-Sieger fehlt). Zählt noch nicht für Punkte.",
+    saved_review: "Gespeichert · IN PRÜFUNG (Elfmeter-Sieger fehlt)",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis (5 + 2 Tendenz)",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
     admin: "Admin",
@@ -561,6 +589,7 @@ function render() {
   renderEvolucion();
   renderEvolucionFase();
   renderResultados();
+  renderRevisionBanner();
   renderAdminSelects();
 }
 
@@ -656,7 +685,7 @@ function renderProximo() {
     area.innerHTML = `<p class="muted" style="text-align:center">${t("final_result")} <strong>${real}</strong></p>`;
   } else if (!abierto) {
     area.innerHTML = mine
-      ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong></p>`
+      ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong>${avanzaTag(p, mine.avanza)}</p>`
       : `<p class="muted" style="text-align:center">${t("closed_no_pred")}</p>`;
   } else {
     area.innerHTML = `
@@ -665,7 +694,9 @@ function renderProximo() {
         <span>–</span>
         <input type="number" min="0" max="20" class="score" id="pv" value="${mine ? mine.visitante : ""}" />
         <button id="send-pred">${mine ? t("update") : t("send")}</button>
-      </div>`;
+      </div>
+      ${avanzaHTML(p, "main", mine && mine.avanza)}`;
+    wireAvanza("main", $("#pl"), $("#pv"));
     $("#send-pred").addEventListener("click", () => enviarPronostico(p.id));
   }
   startCountdown(p);
@@ -674,8 +705,10 @@ function renderProximo() {
 async function enviarPronostico(pid) {
   const local = $("#pl").value, visitante = $("#pv").value;
   if (local === "" || visitante === "") { toast(t("complete_score")); return; }
+  const avanza = getAvanza("main");
+  if (STATE.proximo && faltaAvanza(STATE.proximo, local, visitante, avanza)) { toast(t("pick_advances")); return; }
   try {
-    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante });
+    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante, avanza });
     toast(t("pred_saved"));
     await load();
   } catch (e) {
@@ -729,7 +762,7 @@ function renderEnJuego() {
     let rows = "";
     STATE.participantes.forEach((nom) => {
       const pr = preds[nom];
-      const marc = pr ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}` : "—";
+      const marc = pr ? `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}${avanzaTag(p, pr.avanza)}` : "—";
       rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td><td>${marc}</td></tr>`;
     });
     const card = el("div", "card");
@@ -760,7 +793,7 @@ function renderGridProximo() {
     let marc;
     if (!pr) marc = "—";
     else if (oculto && nom !== me) marc = `<span class="pred-ready">${t("pred_ready")}</span>`;
-    else marc = `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}`;
+    else marc = `${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}${avanzaTag(p, pr.avanza)}`;
     const tr = el("tr", nom === me ? "me" : "");
     tr.innerHTML = `<td>${esc(nom)}</td><td>${marc}</td>`;
     tb.appendChild(tr);
@@ -812,7 +845,7 @@ function renderProximos() {
       </div>`;
     } else {
       form = mine
-        ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong></p>`
+        ? `<p class="muted" style="text-align:center">${t("your_pred")} <strong>${mine.local} – ${mine.visitante}</strong>${avanzaTag(p, mine.avanza)}</p>`
         : `<p class="muted" style="text-align:center">${t("st_closed")}</p>`;
     }
 
@@ -824,22 +857,25 @@ function renderProximos() {
       </div>
       <div class="muted up-when">${[hora, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
       ${pmBar(p)}
-      ${form}`;
+      ${form}
+      ${p.abierto ? avanzaHTML(p, "up" + i, mine && mine.avanza) : ""}`;
     cont.appendChild(card);
   });
 
+  upMatches.forEach((p, i) => { if (p.abierto && esKO(p)) wireAvanza("up" + i, $("#upl" + i), $("#upv" + i)); });
   cont.querySelectorAll(".up-save").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = btn.dataset.i, p = upMatches[i];
-      if (p) saveUpPred(p.id, $("#upl" + i).value, $("#upv" + i).value);
+      if (p) saveUpPred(p.id, $("#upl" + i).value, $("#upv" + i).value, getAvanza("up" + i), p);
     });
   });
 }
 
-async function saveUpPred(pid, local, visitante) {
+async function saveUpPred(pid, local, visitante, avanza, p) {
   if (local === "" || visitante === "") { toast(t("complete_score")); return; }
+  if (p && faltaAvanza(p, local, visitante, avanza)) { toast(t("pick_advances")); return; }
   try {
-    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante });
+    await api("/api/prediccion", { partido_id: pid, participante: me, pin: sessionPin, local, visitante, avanza });
     toast(t("pred_saved"));
     await load();
   } catch (e) {
@@ -896,7 +932,7 @@ function seqEvolucion(matches) {
   const isPh = (p) => isPlaceholder(p.local) || isPlaceholder(p.visitante);
   const hasPred = (p) => STATE.pronosticos.some((pr) => pr.partido_id === p.id);
   return matches
-    .filter((p) => (p.estado === "finalizado" && p.res_local != null && p.res_visitante != null && hasPred(p))
+    .filter((p) => (finalizadoConRes(p) && hasPred(p))
                 || (p.estado !== "finalizado" && !isPh(p)))
     .sort((a, b) => ((a.kickoff_utc || "") < (b.kickoff_utc || "") ? -1 : 1));
 }
@@ -932,7 +968,7 @@ function dibujaEvolucion(box, seq, opts) {
     const preds = p.estado === "finalizado" ? predByPartido(p.id) : {};
     parts.forEach((nom) => {
       const pr = preds[nom];
-      const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden) || 0) : 0;
+      const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden, pr.avanza, p.avanza) || 0) : 0;
       cum[nom].push(cum[nom][cum[nom].length - 1] + pts);
     });
   });
@@ -1008,25 +1044,78 @@ function dibujaEvolucion(box, seq, opts) {
   box.innerHTML = svg + bar;
 }
 
-// Puntuación por fase: el marcador EXACTO cambió a partir de Dieciseisavos.
-// orden <= 71 = grupos (exacto 7); orden >= 72 = eliminatoria (exacto 3).
-// El acierto de solo-resultado vale 2 en todas las fases. No es retroactivo.
-function scoringFor(orden) {
-  return (orden == null || orden <= 71) ? { exact: 7, result: 2 } : { exact: 3, result: 2 };
-}
-function tipoAcierto(pl, pv, rl, rv) {
+// Puntuación (espejo de scoring.py). Grupos: exacto 7 / resultado 2 (los empates
+// son resultado final). Eliminatorias (orden>71): siempre hay ganador; un empate
+// trae "avanza" (penales). Ver memoria/reglas.
+const esEliminatoria = (orden) => orden != null && orden > 71;
+const ladoGanador = (pl, pv, av) => (pl > pv ? "local" : pl < pv ? "visitante" : (av || null));
+
+function puntosGrupos(pl, pv, rl, rv) {
   if (rl == null || rv == null) return null;
-  if (pl === rl && pv === rv) return "exact";
-  const sign = (a, b) => (a > b) - (a < b);
-  if (sign(pl, pv) === sign(rl, rv)) return "result";
-  return "miss";
+  if (pl === rl && pv === rv) return 7;
+  const s = (a, b) => (a > b) - (a < b);
+  if (s(pl, pv) === s(rl, rv)) return 2;
+  return 0;
 }
-function puntos(pl, pv, rl, rv, orden) {
-  const tipo = tipoAcierto(pl, pv, rl, rv);
-  if (tipo == null) return null;
-  const sc = scoringFor(orden);
-  return tipo === "exact" ? sc.exact : tipo === "result" ? sc.result : 0;
+function puntosKO(pl, pv, predAv, rl, rv, realAv) {
+  if (rl == null || rv == null) return null;
+  const predEmp = pl === pv, realEmp = rl === rv, exacto = pl === rl && pv === rv;
+  const predG = ladoGanador(pl, pv, predAv), realG = ladoGanador(rl, rv, realAv);
+  if (!realEmp) {                                   // decidido en cancha
+    if (!predEmp) return exacto ? 3 : (predG === realG ? 2 : 0);
+    return (predAv != null && predAv === realG) ? 2 : 0;   // predijo empate, ganó en cancha
+  }
+  if (predEmp) {                                    // empate -> penales
+    let pts = 2;
+    if (exacto) pts += 1;
+    if (predAv != null && realAv != null && predAv === realAv) pts += 1;
+    return pts;
+  }
+  return (realAv != null && predG === realAv) ? 2 : 0;     // predijo ganador, fue a penales
 }
+function puntos(pl, pv, rl, rv, orden, predAv, realAv) {
+  return esEliminatoria(orden) ? puntosKO(pl, pv, predAv, rl, rv, realAv) : puntosGrupos(pl, pv, rl, rv);
+}
+// ¿El pronóstico ganó puntos? ¿Y fue marcador exacto? (para etiquetas/tablas)
+const esExacto = (pr, p) => pr.local === p.res_local && pr.visitante === p.res_visitante;
+// Helpers de "avanza" (eliminatorias)
+const esKO = (p) => (p.orden || 0) > 71;
+const avanzaTeam = (p, av) => (av === "local" ? p.local : av === "visitante" ? p.visitante : null);
+function avanzaTag(p, av) {
+  const tm = avanzaTeam(p, av);
+  return tm ? ` <span class="avz-tag">→ ${flag(tm)} ${esc(tm)}</span>` : "";
+}
+// Control "¿quién avanza?" (eliminatorias): se muestra solo cuando el marcador es
+// empate. idp = sufijo único. cur = valor actual ('local'/'visitante'/null).
+function avanzaHTML(p, idp, cur) {
+  if (!esKO(p)) return "";
+  const a = (v) => (cur === v ? " active" : "");
+  return `<div class="avanza-pick hidden" id="avz-${idp}" data-av="${cur || ""}">
+      <div class="avanza-q">${t("who_advances")}</div>
+      <div class="avanza-btns">
+        <button type="button" class="avz-btn${a("local")}" data-av="local">${flag(p.local)} ${esc(p.local)}</button>
+        <button type="button" class="avz-btn${a("visitante")}" data-av="visitante">${flag(p.visitante)} ${esc(p.visitante)}</button>
+      </div>
+    </div>`;
+}
+function wireAvanza(idp, plEl, pvEl) {
+  const box = document.getElementById("avz-" + idp);
+  if (!box || !plEl || !pvEl) return;
+  const sync = () => {
+    const draw = plEl.value !== "" && pvEl.value !== "" && Number(plEl.value) === Number(pvEl.value);
+    box.classList.toggle("hidden", !draw);
+  };
+  box.querySelectorAll(".avz-btn").forEach((b) => b.addEventListener("click", () => {
+    box.dataset.av = b.dataset.av;
+    box.querySelectorAll(".avz-btn").forEach((x) => x.classList.toggle("active", x === b));
+  }));
+  plEl.addEventListener("input", sync);
+  pvEl.addEventListener("input", sync);
+  sync();
+}
+const getAvanza = (idp) => { const b = document.getElementById("avz-" + idp); return b && b.dataset.av ? b.dataset.av : null; };
+const faltaAvanza = (p, plVal, pvVal, av) =>
+  esKO(p) && plVal !== "" && pvVal !== "" && Number(plVal) === Number(pvVal) && !av;
 
 // ====================== Fases y ganadores ======================
 // El campo `orden` codifica la fase de forma estable (independiente de los nombres,
@@ -1045,7 +1134,8 @@ function partidosDeFase(key) {
   const f = faseInfo(key);
   return STATE.partidos.filter((p) => p.orden >= f.lo && p.orden <= f.hi);
 }
-const finalizadoConRes = (p) => p.estado === "finalizado" && p.res_local != null && p.res_visitante != null;
+// Cuenta para puntos: finalizado, con marcador, y NO en revisión.
+const finalizadoConRes = (p) => p.estado === "finalizado" && p.res_local != null && p.res_visitante != null && !p.en_revision;
 
 // Tabla de una sola fase: puntos que cada quien ganó SOLO en esos partidos.
 function tablaFase(key) {
@@ -1058,11 +1148,11 @@ function tablaFase(key) {
     STATE.participantes.forEach((nom) => {
       const pr = preds[nom];
       if (!pr) return;
-      const tipo = tipoAcierto(pr.local, pr.visitante, p.res_local, p.res_visitante);
-      if (tipo == null) return;
+      const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden, pr.avanza, p.avanza);
+      if (pts == null) return;
       const s = stats[nom];
-      s.jugados++; s.puntos += puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden);
-      if (tipo === "exact") s.exactos++; else if (tipo === "result") s.resultados++;
+      s.jugados++; s.puntos += pts;
+      if (esExacto(pr, p)) s.exactos++; else if (pts > 0) s.resultados++;
     });
   });
   const arr = Object.values(stats).sort((a, b) =>
@@ -1190,26 +1280,30 @@ function renderResultados() {
   if (!jugados.length) { cont.appendChild(el("div", "card muted", t("no_finished"))); return; }
   jugados.forEach((p) => {
     const preds = predByPartido(p.id);
-    const card = el("div", "card");
+    const enRev = !!p.en_revision;
+    const card = el("div", "card" + (enRev ? " card-rev" : ""));
     let rows = "";
     STATE.participantes.forEach((nom) => {
       const pr = preds[nom];
       if (!pr) {
-        rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td><td>—</td><td>0</td></tr>`;
+        rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td><td>—</td><td>${enRev ? "·" : "0"}</td></tr>`;
         return;
       }
-      const tipo = tipoAcierto(pr.local, pr.visitante, p.res_local, p.res_visitante);
-      const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden);
-      const tag = tipo === "exact" ? `<span class="tag exact">${t("tag_exact")}</span>`
-                : tipo === "result" ? `<span class="tag res">${t("tag_result")}</span>` : "";
+      const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden, pr.avanza, p.avanza);
+      const tag = enRev ? "" : (esExacto(pr, p) ? `<span class="tag exact">${t("tag_exact")}</span>`
+                : (pts > 0 ? `<span class="tag res">${t("tag_result")}</span>` : ""));
       rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td>
-        <td>${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)} ${tag}</td><td class="pts">${pts}</td></tr>`;
+        <td>${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)}${avanzaTag(p, pr.avanza)} ${tag}</td><td class="pts">${enRev ? "·" : pts}</td></tr>`;
     });
     const mx = fmtKickoffMX(p.kickoff_utc);
     const dt = mx ? `${mx.date} · ${mx.time} ${t("center_mx")}` : (p.fecha || "");
+    const penTxt = (p.res_local === p.res_visitante && p.avanza)
+      ? ` <span class="avz-tag">${avanzaTag(p, p.avanza)} ${t("pens_short")}</span>` : "";
+    const revBadge = enRev ? ` <span class="badge rev">${t("st_review")}</span>` : "";
     card.innerHTML = `
-      <h2>${flag(p.local)} ${esc(p.local)} ${p.res_local} – ${p.res_visitante} ${esc(p.visitante)} ${flag(p.visitante)}</h2>
+      <h2>${flag(p.local)} ${esc(p.local)} ${p.res_local} – ${p.res_visitante} ${esc(p.visitante)} ${flag(p.visitante)}${penTxt}${revBadge}</h2>
       <div class="muted" style="margin-bottom:8px">${[dt, p.sede].filter(Boolean).map(esc).join(" · ")}</div>
+      ${enRev ? `<div class="rev-note">${t("review_note")}</div>` : ""}
       <table class="grid"><tr><th>${t("col_participant")}</th><th>${t("col_pred")}</th><th>${t("col_pts")}</th></tr>${rows}</table>`;
     cont.appendChild(card);
   });
@@ -1226,15 +1320,55 @@ function renderAdminSelects() {
   const personas = STATE.participantes.map((p) => ({ value: p, label: p }));
   fillSelect($("#ap-participante"), personas, (p) => p.label);
   fillSelect($("#cp-participante"), personas, (p) => p.label);
+  updateAdminAvanza("ar");
+  updateAdminAvanza("ap");
 }
+
+// Banner parpadeante con los resultados de eliminatoria sin verificar (penales).
+function renderRevisionBanner() {
+  const box = $("#revision-banner");
+  if (!box) return;
+  const rev = STATE.partidos.filter((p) => p.en_revision);
+  if (!rev.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+  const lista = rev.map((p) =>
+    `${flag(p.local)} ${esc(p.local)} ${p.res_local}–${p.res_visitante} ${esc(p.visitante)} ${flag(p.visitante)}`).join(" · ");
+  box.innerHTML = `<span class="rev-ico">⚠️</span> <strong>${t("banner_review")}</strong> <span class="rev-list">${lista}</span>`;
+  box.classList.remove("hidden");
+}
+
+// Selector "¿quién avanza?" en Admin (cargar resultado / meter pronóstico): se
+// muestra cuando el partido elegido es de eliminatoria y el marcador es empate.
+function updateAdminAvanza(prefix) {
+  const row = $("#" + prefix + "-avanza-row"), sel = $("#" + prefix + "-avanza");
+  if (!row || !sel) return;
+  const p = STATE.partidos.find((x) => x.id === ($("#" + prefix + "-partido").value));
+  const lv = $("#" + prefix + "-local").value, vv = $("#" + prefix + "-visitante").value;
+  const draw = lv !== "" && vv !== "" && Number(lv) === Number(vv);
+  if (p && esKO(p) && draw) {
+    sel.innerHTML = `<option value="">${t("opt_pick")}</option>` +
+      `<option value="local">${esc(p.local)}</option>` +
+      `<option value="visitante">${esc(p.visitante)}</option>`;
+    if (prefix === "ar" && p.avanza) sel.value = p.avanza;
+    row.classList.remove("hidden");
+  } else {
+    row.classList.add("hidden");
+  }
+}
+["ar", "ap"].forEach((px) => {
+  ["-partido", "-local", "-visitante"].forEach((suf) => {
+    const e = $("#" + px + suf);
+    if (e) { e.addEventListener("change", () => updateAdminAvanza(px)); e.addEventListener("input", () => updateAdminAvanza(px)); }
+  });
+});
 
 $("#ar-save").addEventListener("click", async () => {
   try {
-    await api("/api/admin/resultado", {
+    const r = await api("/api/admin/resultado", {
       pin: $("#admin-pin").value, partido_id: $("#ar-partido").value,
       local: $("#ar-local").value, visitante: $("#ar-visitante").value,
+      avanza: $("#ar-avanza").value || null,
     });
-    toast(t("result_saved")); await load();
+    toast(r && r.en_revision ? t("saved_review") : t("result_saved")); await load();
   } catch (e) { toast(trErr(e.message)); }
 });
 $("#ap-save").addEventListener("click", async () => {
@@ -1243,6 +1377,7 @@ $("#ap-save").addEventListener("click", async () => {
       pin: $("#admin-pin").value, partido_id: $("#ap-partido").value,
       participante: $("#ap-participante").value,
       local: $("#ap-local").value, visitante: $("#ap-visitante").value,
+      avanza: $("#ap-avanza").value || null,
     });
     toast(t("pred_saved")); await load();
   } catch (e) { toast(trErr(e.message)); }
