@@ -7,11 +7,11 @@
   <title>Quiniela del Grupo 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="styles.css?v=23" />
+  <link rel="stylesheet" href="styles.css?v=24" />
   <!-- PWA: permite "Agregar a pantalla de inicio" como acceso directo -->
-  <link rel="manifest" href="manifest.webmanifest?v=23" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=23" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=23" />
+  <link rel="manifest" href="manifest.webmanifest?v=24" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=24" />
+  <link rel="icon" type="image/png" href="icon-192.png?v=24" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -116,11 +116,21 @@
 
         <div class="card">
           <h2 data-i18n="scoring_title">Puntuación</h2>
-          <ul class="scoring-list">
-            <li><span data-i18n="scoring_exact">Marcador exacto</span><b class="pts">7</b></li>
-            <li><span data-i18n="scoring_result">Solo resultado (gana / empata / pierde)</span><b class="pts">2</b></li>
-            <li><span data-i18n="scoring_miss">Falla</span><b class="pts">0</b></li>
-          </ul>
+          <div class="score-scheme">
+            <div class="ss-phase">
+              <span class="ss-name" data-i18n="sc_group">Fase de grupos</span>
+              <span class="ss-vals"><b>7</b> <i data-i18n="sc_exact_w">exacto</i> · <b>2</b> <i data-i18n="sc_result_w">resultado</i></span>
+            </div>
+            <div class="ss-phase ss-new">
+              <span class="ss-name" data-i18n="sc_ko">Dieciseisavos en adelante</span>
+              <span class="ss-vals"><b>3</b> <i data-i18n="sc_exact_w">exacto</i> · <b>2</b> <i data-i18n="sc_result_w">resultado</i></span>
+            </div>
+            <div class="ss-phase">
+              <span class="ss-name" data-i18n="scoring_miss">Falla</span>
+              <span class="ss-vals"><b>0</b></span>
+            </div>
+          </div>
+          <p class="muted scoring-note" data-i18n="sc_note">El cambio de puntos aplica solo a las nuevas etapas; lo ya jugado en la fase de grupos conserva su puntuación.</p>
         </div>
 
         <div class="card">
@@ -138,17 +148,41 @@
         <div id="proximos-list"></div>
       </section>
 
+      <!-- ===== GANADORES ===== -->
+      <section id="view-ganadores" class="view">
+        <div id="ganadores"></div>
+      </section>
+
       <!-- ===== RESULTADOS ===== -->
       <section id="view-resultados" class="view">
-        <div class="card">
-          <h2 data-i18n="general_table">Tabla general</h2>
-          <table class="lb" id="tabla-full"></table>
+        <div class="seg" id="res-seg">
+          <span class="seg-new" data-i18n="badge_new">NUEVO</span>
+          <button class="seg-btn active" data-res="total" data-i18n="seg_total">Total</button>
+          <button class="seg-btn" data-res="etapa" data-i18n="seg_stage">Esta etapa</button>
         </div>
-        <div class="card">
-          <h2 data-i18n="evolution_title">Evolución de puntos</h2>
-          <div id="evolucion"></div>
+
+        <div id="res-total">
+          <div class="card">
+            <h2 data-i18n="general_table">Tabla general</h2>
+            <table class="lb" id="tabla-full"></table>
+          </div>
+          <div class="card">
+            <h2 data-i18n="evolution_title">Evolución de puntos</h2>
+            <div id="evolucion"></div>
+          </div>
+          <div id="resultados-list"></div>
         </div>
-        <div id="resultados-list"></div>
+
+        <div id="res-etapa" class="hidden">
+          <div class="card">
+            <h2 data-i18n="stage_table_h">Tabla de esta etapa</h2>
+            <div id="tabla-fase-wrap"></div>
+          </div>
+          <div class="card">
+            <h2 id="evo-fase-h">Evolución de puntos</h2>
+            <div id="evolucion-fase"></div>
+          </div>
+        </div>
       </section>
 
       <!-- ===== ADMIN ===== -->
@@ -207,9 +241,16 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path></svg>
         <span class="nav-lbl" data-i18n="nav_upcoming">Próximos</span>
       </button>
+      <button class="navb" data-view="ganadores">
+        <span class="nav-dot"></span>
+        <span class="tab-new" data-i18n="badge_new">NUEVO</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+        <span class="nav-lbl" data-i18n="nav_winners">Ganadores</span>
+      </button>
       <button class="navb" data-view="resultados">
         <span class="nav-dot"></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+        <span class="nav-newdot"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path></svg>
         <span class="nav-lbl" data-i18n="nav_results">Resultados</span>
       </button>
       <button class="navb" data-view="admin">
@@ -220,6 +261,6 @@
     </nav>
   </div>
 
-  <script src="app.js?v=23"></script>
+  <script src="app.js?v=24"></script>
 </body>
 </html>

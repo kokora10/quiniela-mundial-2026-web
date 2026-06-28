@@ -385,6 +385,25 @@ table { width: 100%; border-collapse: collapse; }
   min-width: 34px; text-align: center; padding: 4px 10px; border-radius: 9px;
   background: var(--accentsoft); color: var(--accent); font-size: .95rem;
 }
+/* Esquema de puntuación por fase */
+.score-scheme { display: flex; flex-direction: column; gap: 2px; }
+.ss-phase {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 11px 2px; border-bottom: 1px solid var(--line); font-size: .92rem;
+}
+.ss-phase:last-child { border-bottom: none; }
+.ss-name { font-weight: 600; }
+.ss-vals { white-space: nowrap; color: var(--muted); font-size: .86rem; }
+.ss-vals b {
+  color: var(--accent); font-weight: 800; font-variant-numeric: tabular-nums;
+  padding: 2px 8px; border-radius: 7px; background: var(--accentsoft); margin: 0 1px;
+}
+.ss-vals i { font-style: normal; }
+.ss-new .ss-name { color: var(--accent); }
+.ss-new .ss-name::after {
+  content: "•"; margin-left: 6px; color: var(--accent2); font-weight: 900;
+}
+.scoring-note { margin: 12px 0 0; line-height: 1.45; }
 
 /* ===== Próximos partidos ===== */
 .up-date {
@@ -480,3 +499,122 @@ table { width: 100%; border-collapse: collapse; }
 .pred-ready { display: inline-block; padding: 2px 9px; border-radius: 999px;
   background: var(--badgebg); color: var(--badgefg); font-weight: 800; font-size: .78rem; }
 .pred-note { font-size: .72rem; text-align: center; padding-top: 8px; }
+
+/* ===================== Ganadores / Campeones ===================== */
+.winners-title {
+  font-size: 1.15rem; font-weight: 800; letter-spacing: -.2px;
+  margin: 2px 0 16px; text-align: center; color: var(--ink);
+}
+.champ-card {
+  background: var(--panel); border: 1px solid var(--pborder);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 18px;
+  box-shadow: var(--pshadow);
+}
+.champ-hero {
+  position: relative; overflow: hidden; text-align: center;
+  padding: 22px 18px 24px;
+  background:
+    radial-gradient(120% 90% at 50% -20%, rgba(255,255,255,.55), transparent 55%),
+    linear-gradient(135deg, #fff0b8 0%, #ffd24d 42%, #f5a623 100%);
+  color: #5a3e00;
+}
+.champ-hero::after { /* brillo que cruza lento */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(75deg, transparent 40%, rgba(255,255,255,.55) 50%, transparent 60%);
+  transform: translateX(-120%); animation: sheen 4.5s ease-in-out infinite;
+}
+@keyframes sheen { 0%,60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.champ-conf { font-size: .85rem; letter-spacing: 4px; opacity: .9; margin-bottom: 2px; }
+.champ-trophy { font-size: 2.7rem; line-height: 1; filter: drop-shadow(0 3px 6px rgba(120,80,0,.35)); animation: pop .6s ease both; }
+@keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+.champ-label {
+  margin-top: 6px; font-size: .72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1.5px; color: #7a5600;
+}
+.champ-names { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 8px 0 4px; }
+.champ-one { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.champ-crown { font-size: 1.1rem; line-height: 1; }
+.champ-name { font-size: 1.7rem; font-weight: 900; letter-spacing: -.5px; color: #3a2800; text-shadow: 0 1px 0 rgba(255,255,255,.4); }
+.champ-names.tie .champ-name { font-size: 1.25rem; }
+.champ-name.me { text-decoration: underline wavy rgba(58,40,0,.4); text-underline-offset: 4px; }
+.champ-pts {
+  display: inline-block; margin-top: 4px; padding: 4px 14px; border-radius: 999px;
+  background: rgba(90,62,0,.16); color: #4a3300; font-weight: 800; font-size: .82rem;
+}
+.champ-insp {
+  position: relative; z-index: 1; margin: 12px auto 0; max-width: 340px;
+  padding: 0 4px; box-sizing: border-box;
+  font-size: .88rem; line-height: 1.5; font-weight: 600; color: #4a3500;
+  overflow-wrap: break-word; word-break: normal;
+}
+/* Podio */
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; padding: 16px 12px 18px; box-sizing: border-box; width: 100%; }
+.podium-col { flex: 1 1 0; min-width: 0; max-width: 104px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.podium-medal { font-size: 1.5rem; line-height: 1; }
+.podium-names { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.podium-name { font-size: .82rem; font-weight: 700; color: var(--ink); text-align: center; word-break: break-word; line-height: 1.2; }
+.podium-name.me { color: var(--metext); }
+.podium-bar {
+  width: 100%; border-radius: 10px 10px 0 0; display: flex; align-items: flex-start;
+  justify-content: center; padding-top: 7px; color: #2a1d00; font-weight: 800; font-size: .85rem;
+}
+.pp1 .podium-bar { height: 76px; background: linear-gradient(180deg, #ffe07a, #f3b41f); box-shadow: 0 0 14px rgba(243,180,31,.4); }
+.pp2 .podium-bar { height: 56px; background: linear-gradient(180deg, #e8edf3, #b9c2cf); }
+.pp3 .podium-bar { height: 42px; background: linear-gradient(180deg, #f0b98a, #cf8b50); }
+/* Líder provisional (fase en curso) */
+.champ-progress {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px;
+  text-align: left; font-size: .86rem;
+}
+.cp-tag {
+  font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
+  padding: 4px 10px; border-radius: 999px; background: var(--warnbg); color: var(--warnfg);
+}
+.cp-leader { font-weight: 700; color: var(--ink); }
+/* Segunda tabla: acumulado de la etapa */
+.stage-sub { font-weight: 800; font-size: .95rem; color: var(--accent); margin-bottom: 2px; }
+.stage-hint { margin: 0 0 10px; }
+@media (max-width: 420px) {
+  .champ-name { font-size: 1.45rem; }
+  .podium-col { max-width: 96px; }
+  .podium-name { font-size: .76rem; }
+}
+
+/* ===================== Control segmentado (Total / Esta etapa) ===================== */
+.seg {
+  display: flex; gap: 4px; margin-bottom: 16px; padding: 4px;
+  background: var(--panel); border: 1px solid var(--pborder); border-radius: 999px;
+}
+.seg-btn {
+  flex: 1; border: none; background: transparent; color: var(--muted);
+  font-weight: 700; font-size: .85rem; padding: 9px 8px; border-radius: 999px;
+  cursor: pointer; transition: color .2s, background .2s; box-shadow: none;
+}
+.seg-btn:hover { color: var(--ink); }
+.seg-btn.active { background: var(--grad); color: var(--btnfg); box-shadow: var(--accentglow); }
+
+/* ===================== Indicadores "NUEVO" ===================== */
+.navb { position: relative; }
+@keyframes newPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.8); } }
+/* Pastilla "NUEVO" sobre la pestaña Ganadores */
+.tab-new {
+  position: absolute; top: 1px; left: 50%; transform: translateX(-50%);
+  font-size: .48rem; font-weight: 800; letter-spacing: .4px; line-height: 1.5;
+  background: var(--accent2); color: #fff; padding: 1px 6px; border-radius: 999px;
+  box-shadow: 0 0 9px var(--accent2); pointer-events: none; white-space: nowrap;
+  animation: newPulse 1.9s ease-in-out infinite;
+}
+/* Puntito en Resultados (hay algo nuevo dentro) */
+.nav-newdot {
+  position: absolute; top: 5px; left: calc(50% + 11px); width: 8px; height: 8px;
+  background: var(--accent2); border-radius: 50%; box-shadow: 0 0 7px var(--accent2);
+  pointer-events: none; animation: newPulse 1.9s ease-in-out infinite;
+}
+/* Pastilla "NUEVO" en el control segmentado */
+.seg-new {
+  position: absolute; top: -9px; right: 12px; z-index: 2;
+  font-size: .56rem; font-weight: 800; letter-spacing: .5px;
+  background: var(--accent2); color: #fff; padding: 2px 9px; border-radius: 999px;
+  box-shadow: 0 0 10px var(--accent2); pointer-events: none;
+  animation: newPulse 1.9s ease-in-out infinite;
+}

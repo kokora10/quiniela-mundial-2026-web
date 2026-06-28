@@ -30,6 +30,18 @@ const I18N = {
     evo_progress: "{j}/{m} jugados",
     evo_left: "faltan {n}",
     ph_group: "Grupos", ph_r32: "Dieciseisavos", ph_r16: "Octavos", ph_qf: "Cuartos", ph_sf: "Semis", ph_third: "3.er lugar", ph_final: "Final",
+    nav_winners: "Ganadores", winners_title: "🏆 Salón de campeones",
+    winners_empty: "Aún no termina ninguna fase. Cuando concluya, aquí brillarán los campeones. 🏆",
+    champ_label: "Campeón · {phase}", champ_tie_label: "Campeones · {phase}", champ_pts: "{pts} puntos",
+    insp_single: "🏆 ¡{name}, campeón de {phase}! Con {pts} puntos demostraste que leer el fútbol también es un arte. Disfruta la cima… y que te impulse: lo mejor del torneo apenas comienza. 💪",
+    insp_tie: "🏆 ¡Empate en la cima de {phase}! {names} comparten la corona con {pts} puntos cada uno. La gloria sabe mejor cuando hay con quién disputarla. 🔥",
+    stage_table_h: "Tabla de esta etapa", stage_table_hint: "Solo cuenta los puntos ganados en esta fase.",
+    stage_none: "Esta etapa aún no tiene partidos finalizados.",
+    champ_in_progress: "En curso: {phase}", champ_leader_now: "Líder provisional: {name} ({pts})",
+    sc_group: "Fase de grupos", sc_ko: "Dieciseisavos en adelante",
+    sc_exact_w: "exacto", sc_result_w: "resultado",
+    sc_note: "El cambio de puntos aplica solo a las nuevas etapas; lo ya jugado en la fase de grupos conserva su puntuación.",
+    seg_total: "Total", seg_stage: "Esta etapa", badge_new: "NUEVO",
     scoring_title: "Puntuación", scoring_exact: "Marcador exacto (5 + 2 de resultado)",
     scoring_result: "Solo resultado (gana / empata / pierde)", scoring_miss: "Falla",
     admin: "Admin",
@@ -90,6 +102,18 @@ const I18N = {
     evo_progress: "{j}/{m} played",
     evo_left: "{n} left",
     ph_group: "Groups", ph_r32: "Round of 32", ph_r16: "Round of 16", ph_qf: "Quarters", ph_sf: "Semis", ph_third: "3rd place", ph_final: "Final",
+    nav_winners: "Winners", winners_title: "🏆 Hall of Champions",
+    winners_empty: "No phase has finished yet. When one wraps up, the champions will shine here. 🏆",
+    champ_label: "Champion · {phase}", champ_tie_label: "Champions · {phase}", champ_pts: "{pts} points",
+    insp_single: "🏆 {name}, champion of the {phase}! With {pts} points you proved that reading football is an art. Enjoy the top… and let it fuel you: the best of the tournament is just beginning. 💪",
+    insp_tie: "🏆 A tie at the top of the {phase}! {names} share the crown with {pts} points each. Glory tastes better when it's contested. 🔥",
+    stage_table_h: "This stage's table", stage_table_hint: "Counts only the points earned in this phase.",
+    stage_none: "This stage has no finished matches yet.",
+    champ_in_progress: "In progress: {phase}", champ_leader_now: "Current leader: {name} ({pts})",
+    sc_group: "Group stage", sc_ko: "Round of 32 onward",
+    sc_exact_w: "exact", sc_result_w: "result",
+    sc_note: "The points change applies only to the new stages; what was already played in the group stage keeps its scoring.",
+    seg_total: "Total", seg_stage: "This stage", badge_new: "NEW",
     scoring_title: "Scoring", scoring_exact: "Exact score (5 + 2 result)",
     scoring_result: "Result only (win / draw / loss)", scoring_miss: "Wrong",
     admin: "Admin",
@@ -150,6 +174,18 @@ const I18N = {
     evo_progress: "{j}/{m} сыграно",
     evo_left: "осталось {n}",
     ph_group: "Группы", ph_r32: "1/16", ph_r16: "1/8", ph_qf: "1/4", ph_sf: "1/2", ph_third: "За 3-е", ph_final: "Финал",
+    nav_winners: "Победители", winners_title: "🏆 Зал чемпионов",
+    winners_empty: "Ни одна стадия ещё не завершена. Когда это произойдёт, здесь засияют чемпионы. 🏆",
+    champ_label: "Чемпион · {phase}", champ_tie_label: "Чемпионы · {phase}", champ_pts: "{pts} очк.",
+    insp_single: "🏆 {name}, чемпион стадии «{phase}»! {pts} очков — ты доказал, что читать футбол это искусство. Наслаждайся вершиной… и пусть это вдохновляет: лучшее в турнире только начинается. 💪",
+    insp_tie: "🏆 Ничья на вершине «{phase}»! {names} делят корону — по {pts} очков. Слава слаще, когда за неё борются. 🔥",
+    stage_table_h: "Таблица этой стадии", stage_table_hint: "Учитываются только очки, набранные на этой стадии.",
+    stage_none: "На этой стадии пока нет завершённых матчей.",
+    champ_in_progress: "Идёт: {phase}", champ_leader_now: "Текущий лидер: {name} ({pts})",
+    sc_group: "Групповой этап", sc_ko: "С 1/16 и далее",
+    sc_exact_w: "точный", sc_result_w: "исход",
+    sc_note: "Изменение очков касается только новых стадий; уже сыгранный групповой этап сохраняет свою систему.",
+    seg_total: "Итого", seg_stage: "Эта стадия", badge_new: "НОВОЕ",
     scoring_title: "Подсчёт очков", scoring_exact: "Точный счёт (5 + 2 за исход)",
     scoring_result: "Только исход (победа / ничья / поражение)", scoring_miss: "Не угадал",
     admin: "Админ",
@@ -210,6 +246,18 @@ const I18N = {
     evo_progress: "{j}/{m} gespielt",
     evo_left: "noch {n}",
     ph_group: "Gruppen", ph_r32: "Sechzehntel", ph_r16: "Achtel", ph_qf: "Viertel", ph_sf: "Halbfinale", ph_third: "Platz 3", ph_final: "Finale",
+    nav_winners: "Sieger", winners_title: "🏆 Halle der Champions",
+    winners_empty: "Noch keine Phase beendet. Sobald eine endet, glänzen hier die Champions. 🏆",
+    champ_label: "Champion · {phase}", champ_tie_label: "Champions · {phase}", champ_pts: "{pts} Punkte",
+    insp_single: "🏆 {name}, Champion der {phase}! Mit {pts} Punkten hast du bewiesen, dass Fußball lesen eine Kunst ist. Genieße die Spitze… und lass dich antreiben: Das Beste des Turniers fängt gerade erst an. 💪",
+    insp_tie: "🏆 Gleichstand an der Spitze der {phase}! {names} teilen sich die Krone mit je {pts} Punkten. Ruhm schmeckt besser, wenn er umkämpft ist. 🔥",
+    stage_table_h: "Tabelle dieser Phase", stage_table_hint: "Zählt nur die in dieser Phase erzielten Punkte.",
+    stage_none: "Diese Phase hat noch keine beendeten Spiele.",
+    champ_in_progress: "Läuft: {phase}", champ_leader_now: "Aktueller Spitzenreiter: {name} ({pts})",
+    sc_group: "Gruppenphase", sc_ko: "Ab Sechzehntelfinale",
+    sc_exact_w: "exakt", sc_result_w: "Ergebnis",
+    sc_note: "Die Punkteänderung gilt nur für die neuen Phasen; die bereits gespielte Gruppenphase behält ihre Wertung.",
+    seg_total: "Gesamt", seg_stage: "Diese Phase", badge_new: "NEU",
     scoring_title: "Punktevergabe", scoring_exact: "Exaktes Ergebnis (5 + 2 Tendenz)",
     scoring_result: "Nur Tendenz (Sieg / Unentschieden / Niederlage)", scoring_miss: "Daneben",
     admin: "Admin",
@@ -461,6 +509,26 @@ $("#change-cancel").addEventListener("click", () => showApp());
 $("#btn-cambiar").addEventListener("click", () => showChange(false));
 $("#btn-salir").addEventListener("click", () => { clearSession(); showLogin(); });
 
+// ---- Sub-pestañas de Resultados (Total / Esta etapa) ----
+document.querySelectorAll("#res-seg .seg-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#res-seg .seg-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    const which = btn.dataset.res;
+    $("#res-total").classList.toggle("hidden", which !== "total");
+    $("#res-etapa").classList.toggle("hidden", which !== "etapa");
+  });
+});
+
+// ---- Indicadores "NUEVO": se ocultan cuando el usuario ya abrió la sección ----
+function visto(key) { try { return localStorage.getItem("q_seen_" + key) === "1"; } catch (e) { return false; } }
+function aplicarNuevos() {
+  const set = (sel, key) => document.querySelectorAll(sel).forEach((e) => { e.style.display = visto(key) ? "none" : ""; });
+  set('.navb[data-view="ganadores"] .tab-new', "ganadores");
+  set('.navb[data-view="resultados"] .nav-newdot', "resultados");
+  set("#res-seg .seg-new", "resultados");
+}
+function marcarVisto(key) { try { localStorage.setItem("q_seen_" + key, "1"); } catch (e) {} aplicarNuevos(); }
+
 // ---- Navegación inferior (tab bar) ----
 document.querySelectorAll(".navb").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -468,6 +536,7 @@ document.querySelectorAll(".navb").forEach((btn) => {
     document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
     btn.classList.add("active");
     $("#view-" + btn.dataset.view).classList.add("active");
+    if (btn.dataset.view === "ganadores" || btn.dataset.view === "resultados") marcarVisto(btn.dataset.view);
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
@@ -487,7 +556,10 @@ function render() {
   renderGridProximo();
   renderProximos();
   renderTablaFull();
+  renderTablaFase();
+  renderGanadores();
   renderEvolucion();
+  renderEvolucionFase();
   renderResultados();
   renderAdminSelects();
 }
@@ -818,16 +890,36 @@ function niceMax(max) {
 // Gráfica de líneas: puntos acumulados de cada participante, partido a partido.
 // Eje X = partidos jugados (línea sólida) + por jugar (proyección punteada), para
 // ver cuánto falta. El nombre de cada quien va al final de su línea.
-function renderEvolucion() {
-  const box = $("#evolucion");
-  if (!box) return;
+// Secuencia base de una gráfica: partidos que cuentan (finalizados con pronóstico)
+// + próximos reales (no placeholders), ordenados por kickoff.
+function seqEvolucion(matches) {
   const isPh = (p) => isPlaceholder(p.local) || isPlaceholder(p.visitante);
   const hasPred = (p) => STATE.pronosticos.some((pr) => pr.partido_id === p.id);
-  // Secuencia: finalizados con pronóstico (cuentan) + próximos reales (no placeholders).
-  const seq = STATE.partidos
+  return matches
     .filter((p) => (p.estado === "finalizado" && p.res_local != null && p.res_visitante != null && hasPred(p))
                 || (p.estado !== "finalizado" && !isPh(p)))
     .sort((a, b) => ((a.kickoff_utc || "") < (b.kickoff_utc || "") ? -1 : 1));
+}
+
+// Total: todo el torneo (con marcadores de fase).
+function renderEvolucion() {
+  dibujaEvolucion($("#evolucion"), seqEvolucion(STATE.partidos), { markers: true });
+}
+// Etapa actual: solo los partidos de la fase en curso (sin marcadores de fase).
+function renderEvolucionFase() {
+  const box = $("#evolucion-fase");
+  if (!box) return;
+  const cur = faseActual();
+  const h = $("#evo-fase-h");
+  if (h) h.textContent = t("evolution_title") + (cur ? " · " + t(cur) : "");
+  if (!cur) { box.innerHTML = `<p class="muted" style="text-align:center">${t("evo_empty")}</p>`; return; }
+  dibujaEvolucion(box, seqEvolucion(partidosDeFase(cur)), { markers: false });
+}
+
+// Núcleo reutilizable de la gráfica de evolución sobre una secuencia dada.
+function dibujaEvolucion(box, seq, opts) {
+  if (!box) return;
+  opts = opts || {};
   const pj = seq.filter((p) => p.estado === "finalizado").length;  // partidos ya jugados
   if (!pj) {
     box.innerHTML = `<p class="muted" style="text-align:center">${t("evo_empty")}</p>`;
@@ -840,7 +932,7 @@ function renderEvolucion() {
     const preds = p.estado === "finalizado" ? predByPartido(p.id) : {};
     parts.forEach((nom) => {
       const pr = preds[nom];
-      const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante) || 0) : 0;
+      const pts = pr ? (puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden) || 0) : 0;
       cum[nom].push(cum[nom][cum[nom].length - 1] + pts);
     });
   });
@@ -866,8 +958,8 @@ function renderEvolucion() {
   // Líneas verticales de cambio de fase (dentro de lo jugado), con el nombre rotado.
   let phases = "";
   let prevFase = null;
-  for (let k = 1; k <= D; k++) {
-    const f = faseDe(seq[k - 1].id);
+  for (let k = 1; opts.markers && k <= D; k++) {
+    const f = faseDeOrden(seq[k - 1].orden);
     if (f !== prevFase) {
       const xb = X(k - 1);
       if (k > 1) phases += `<line x1="${xb.toFixed(1)}" y1="${mt}" x2="${xb.toFixed(1)}" y2="${(mt + ph).toFixed(1)}" class="evo-phase"/>`;
@@ -916,12 +1008,179 @@ function renderEvolucion() {
   box.innerHTML = svg + bar;
 }
 
-function puntos(pl, pv, rl, rv) {
+// Puntuación por fase: el marcador EXACTO cambió a partir de Dieciseisavos.
+// orden <= 71 = grupos (exacto 7); orden >= 72 = eliminatoria (exacto 3).
+// El acierto de solo-resultado vale 2 en todas las fases. No es retroactivo.
+function scoringFor(orden) {
+  return (orden == null || orden <= 71) ? { exact: 7, result: 2 } : { exact: 3, result: 2 };
+}
+function tipoAcierto(pl, pv, rl, rv) {
   if (rl == null || rv == null) return null;
-  if (pl === rl && pv === rv) return 7;
+  if (pl === rl && pv === rv) return "exact";
   const sign = (a, b) => (a > b) - (a < b);
-  if (sign(pl, pv) === sign(rl, rv)) return 2;
-  return 0;
+  if (sign(pl, pv) === sign(rl, rv)) return "result";
+  return "miss";
+}
+function puntos(pl, pv, rl, rv, orden) {
+  const tipo = tipoAcierto(pl, pv, rl, rv);
+  if (tipo == null) return null;
+  const sc = scoringFor(orden);
+  return tipo === "exact" ? sc.exact : tipo === "result" ? sc.result : 0;
+}
+
+// ====================== Fases y ganadores ======================
+// El campo `orden` codifica la fase de forma estable (independiente de los nombres,
+// que pasan de placeholder a equipos reales): 0-71 grupos, 72-87 16avos, etc.
+const PHASES = [
+  { key: "ph_group", lo: 0,   hi: 71  },
+  { key: "ph_r32",   lo: 72,  hi: 87  },
+  { key: "ph_r16",   lo: 88,  hi: 95  },
+  { key: "ph_qf",    lo: 96,  hi: 99  },
+  { key: "ph_sf",    lo: 100, hi: 101 },
+  { key: "ph_final", lo: 102, hi: 103 },
+];
+function faseInfo(key) { return PHASES.find((p) => p.key === key); }
+function faseDeOrden(o) { const f = PHASES.find((p) => o >= p.lo && o <= p.hi); return f ? f.key : "ph_group"; }
+function partidosDeFase(key) {
+  const f = faseInfo(key);
+  return STATE.partidos.filter((p) => p.orden >= f.lo && p.orden <= f.hi);
+}
+const finalizadoConRes = (p) => p.estado === "finalizado" && p.res_local != null && p.res_visitante != null;
+
+// Tabla de una sola fase: puntos que cada quien ganó SOLO en esos partidos.
+function tablaFase(key) {
+  const matches = partidosDeFase(key);
+  const fin = matches.filter(finalizadoConRes);
+  const stats = {};
+  STATE.participantes.forEach((nom) => (stats[nom] = { participante: nom, puntos: 0, exactos: 0, resultados: 0, jugados: 0 }));
+  fin.forEach((p) => {
+    const preds = predByPartido(p.id);
+    STATE.participantes.forEach((nom) => {
+      const pr = preds[nom];
+      if (!pr) return;
+      const tipo = tipoAcierto(pr.local, pr.visitante, p.res_local, p.res_visitante);
+      if (tipo == null) return;
+      const s = stats[nom];
+      s.jugados++; s.puntos += puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden);
+      if (tipo === "exact") s.exactos++; else if (tipo === "result") s.resultados++;
+    });
+  });
+  const arr = Object.values(stats).sort((a, b) =>
+    b.puntos - a.puntos || b.exactos - a.exactos || a.participante.localeCompare(b.participante));
+  let pos = 0, prev = null;
+  arr.forEach((r, i) => { if (prev === null || r.puntos !== prev) { pos = i + 1; prev = r.puntos; } r.posicion = pos; });
+  return { arr, total: matches.length, finalizados: fin.length };
+}
+const faseCompleta = (key) => { const t = tablaFase(key); return t.total > 0 && t.finalizados === t.total; };
+// Fase "actual" / etapa en curso: la PRIMERA fase que aún no termina (tiene
+// partidos pero no todos finalizados). Así la "tabla de esta etapa" arranca en
+// ceros al empezar una fase nueva y va sumando solo lo de esa fase. Si todo está
+// terminado, devuelve la última.
+function faseActual() {
+  for (const ph of PHASES) {
+    const tt = tablaFase(ph.key);
+    if (tt.total > 0 && tt.finalizados < tt.total) return ph.key;
+  }
+  const conPartidos = PHASES.filter((ph) => partidosDeFase(ph.key).length > 0);
+  return conPartidos.length ? conPartidos[conPartidos.length - 1].key : null;
+}
+// Ganadores de una fase (incluye TODOS los empatados en el máximo).
+function ganadoresDe(key) {
+  const { arr, finalizados, total } = tablaFase(key);
+  if (!finalizados) return null;
+  const max = arr.length ? arr[0].puntos : 0;
+  return { campeones: max > 0 ? arr.filter((r) => r.puntos === max) : [], max, arr, finalizados, total };
+}
+
+function listaNombres(noms) {
+  if (noms.length <= 1) return noms[0] || "";
+  return noms.slice(0, -1).join(", ") + " & " + noms[noms.length - 1];
+}
+
+function champCardHTML(key) {
+  const g = ganadoresDe(key);
+  const phase = t(key);
+  const names = g.campeones.map((c) => c.participante);
+  const tie = names.length > 1;
+  const insp = tie
+    ? t("insp_tie", { names: esc(listaNombres(names)), phase: esc(phase), pts: g.max })
+    : t("insp_single", { name: esc(names[0]), phase: esc(phase), pts: g.max });
+  const crowns = g.campeones.map((c) =>
+    `<div class="champ-one"><span class="champ-crown">👑</span><span class="champ-name${c.participante === me ? " me" : ""}">${esc(c.participante)}</span></div>`).join("");
+  const medals = ["🥇", "🥈", "🥉"];
+  // Podio por VALOR de puntos: los 3 mejores puntajes distintos. Cada escalón
+  // muestra a TODOS los empatados en ese puntaje (oro/plata/bronce compartidos).
+  const distintos = [...new Set(g.arr.filter((r) => r.puntos > 0).map((r) => r.puntos))]
+    .sort((a, b) => b - a).slice(0, 3);
+  const tiers = distintos.map((val, idx) => ({
+    cls: "pp" + (idx + 1), medal: medals[idx], pts: val,
+    names: g.arr.filter((r) => r.puntos === val).map((r) => r.participante),
+  }));
+  const orden = tiers.length === 3 ? [1, 0, 2] : tiers.length === 2 ? [0, 1] : [0];
+  const podium = orden.map((i) => {
+    const ti = tiers[i];
+    if (!ti) return "";
+    const names = ti.names.map((n) => `<div class="podium-name${n === me ? " me" : ""}">${esc(n)}</div>`).join("");
+    return `<div class="podium-col ${ti.cls}">
+        <div class="podium-medal">${ti.medal}</div>
+        <div class="podium-names">${names}</div>
+        <div class="podium-bar"><b>${ti.pts}</b></div>
+      </div>`;
+  }).join("");
+  return `<div class="champ-card">
+    <div class="champ-hero">
+      <div class="champ-conf" aria-hidden="true">🎉 ✨ 🎊 ✨ 🎉</div>
+      <div class="champ-trophy">🏆</div>
+      <div class="champ-label">${tie ? t("champ_tie_label", { phase: esc(phase) }) : t("champ_label", { phase: esc(phase) })}</div>
+      <div class="champ-names${tie ? " tie" : ""}">${crowns}</div>
+      <div class="champ-pts">${t("champ_pts", { pts: g.max })}</div>
+      <p class="champ-insp">${insp}</p>
+    </div>
+    ${podium ? `<div class="podium">${podium}</div>` : ""}
+  </div>`;
+}
+
+function renderGanadores() {
+  const box = $("#ganadores");
+  if (!box) return;
+  let html = `<div class="winners-title">${t("winners_title")}</div>`;
+  const completas = PHASES.filter((ph) => faseCompleta(ph.key));
+  if (!completas.length) {
+    box.innerHTML = html + `<div class="card muted" style="text-align:center">${t("winners_empty")}</div>`;
+    return;
+  }
+  // Más reciente primero (campeón más nuevo arriba).
+  html += completas.slice().reverse().map((ph) => champCardHTML(ph.key)).join("");
+  // Fase en curso (no completa pero con partidos finalizados): líder provisional.
+  const cur = faseActual();
+  if (cur && !faseCompleta(cur)) {
+    const g = ganadoresDe(cur);
+    if (g && g.campeones.length) {
+      html += `<div class="champ-progress card">
+        <span class="cp-tag">${t("champ_in_progress", { phase: esc(t(cur)) })}</span>
+        <span class="cp-leader">${t("champ_leader_now", { name: esc(listaNombres(g.campeones.map((c) => c.participante))), pts: g.max })}</span>
+      </div>`;
+    }
+  }
+  box.innerHTML = html;
+}
+
+// Segunda tabla en "Resultados": acumulado SOLO de la etapa actual.
+function renderTablaFase() {
+  const box = $("#tabla-fase-wrap");
+  if (!box) return;
+  const cur = faseActual();
+  if (!cur) { box.innerHTML = `<p class="muted">${t("stage_none")}</p>`; return; }
+  const { arr } = tablaFase(cur);
+  let rows = `<tr><th>${t("col_num")}</th><th>${t("col_participant")}</th><th>${t("col_pts")}</th>` +
+    `<th>${t("col_exact")}</th><th>${t("col_result")}</th><th>${t("col_played")}</th></tr>`;
+  arr.forEach((r) => {
+    rows += `<tr class="${r.participante === me ? "me" : ""}"><td>${r.posicion}</td><td>${esc(r.participante)}</td>` +
+      `<td class="pts">${r.puntos}</td><td>${r.exactos}</td><td>${r.resultados}</td><td>${r.jugados}</td></tr>`;
+  });
+  box.innerHTML = `<div class="stage-sub">${esc(t(cur))}</div>` +
+    `<p class="muted stage-hint">${t("stage_table_hint")}</p>` +
+    `<table class="lb">${rows}</table>`;
 }
 
 function renderResultados() {
@@ -939,9 +1198,10 @@ function renderResultados() {
         rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td><td>—</td><td>0</td></tr>`;
         return;
       }
-      const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante);
-      const tag = pts === 7 ? `<span class="tag exact">${t("tag_exact")}</span>`
-                : pts === 2 ? `<span class="tag res">${t("tag_result")}</span>` : "";
+      const tipo = tipoAcierto(pr.local, pr.visitante, p.res_local, p.res_visitante);
+      const pts = puntos(pr.local, pr.visitante, p.res_local, p.res_visitante, p.orden);
+      const tag = tipo === "exact" ? `<span class="tag exact">${t("tag_exact")}</span>`
+                : tipo === "result" ? `<span class="tag res">${t("tag_result")}</span>` : "";
       rows += `<tr class="${nom === me ? "me" : ""}"><td>${esc(nom)}</td>
         <td>${flag(p.local)} ${pr.local} – ${pr.visitante} ${flag(p.visitante)} ${tag}</td><td class="pts">${pts}</td></tr>`;
     });
@@ -1012,6 +1272,7 @@ $("#sync-btn").addEventListener("click", async () => {
 (async function boot() {
   applyTheme();
   applyStaticI18n();
+  aplicarNuevos();
   await fillNombres();
   if (me && sessionPin) {
     if (sessionStorage.getItem("q_must") === "1") showChange(true);
